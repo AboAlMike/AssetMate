@@ -1,0 +1,186 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load custom_filters %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+   <div class="pagetitle">
+        <h1>Inventory Tracking</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item active">Inventory Tracking</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section" >
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">All Inventory Items</h5>
+    
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="inventory-tab" data-toggle="tab" href="#inventoryLevels" role="tab" aria-controls="inventoryLevels" aria-selected="true">Inventory Levels</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="alerts-tab" data-toggle="tab" href="#criticalAlerts" role="tab" aria-controls="criticalAlerts" aria-selected="false">Critical level alerts</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="inventoryLevels" role="tabpanel" aria-labelledby="inventory-tab"><br>
+          <h4>Current Inventory Levels</h4>
+          <div class="row mb-3">
+            <div class="col-md-4 g-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+            </div>
+            <div class="col-md-4 g-3">
+                <select id="statusFilter" class="form-control">
+                    <option value="">All Statuses</option>
+                    <option value="Available">Available</option>
+                    <option value="Critical">Critical</option>
+                </select>
+            </div>
+            {% if request.user.role == 'system_admin' or request.user.role == 'inventory_manager' %}
+            <div class="col-md-3 text-end g-3">
+            <a href="{% url 'add_item' %}"><button class="btn btn-primary" >
+              <i class="bi bi-plus-circle"></i> Add New Item</button>
+            </a>
+          </div>
+          {% endif %}
+          </div>
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+              </div>
+            {% endfor %}
+          {% endif %} 
+          <div class="table-responsive">
+          <table  class="table table-striped " id="inventoryTable">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Serial Number</th>
+                <th>Quantity</th>
+                <th>Location</th>
+                <th>Minimum Stock Level</th>
+                <th>Status</th>
+                {% if request.user.role == 'system_admin' or request.user.role == 'inventory_manager' %}
+                <th>Actions</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in InventoryItem %} 
+              <tr>
+                <td>{{item.name}}</td>
+                <td>{{item.serial_number}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.location}}</td>
+                <td>{{item.minimumStockLevel}}</td>
+
+                <td class="{% if item.status == 'Critical' %}text-danger{% endif %}">{{item.status}}</td> 
+                {% if request.user.role == 'system_admin' or request.user.role == 'inventory_manager' %}
+
+                <td>
+                  <a href ="{% url 'info_item' item.itemId  %}" class="btn btn-sm btn-outline-secondary" title="View">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </a>
+                  <a href="{% url 'edit_item' item.itemId  %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="bi bi-pencil"></i></a>
+                  <form method="POST" action="{% url 'delete_item' item.itemId %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete {{item.name}}? ')">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+          
+
+          
+        </div>
+        
+        <!-- Critical Level Alerts -->
+
+        <div class="tab-pane fade" id="criticalAlerts" role="tabpanel" aria-labelledby="alerts-tab"><br>
+          <h3></h3>
+          {% with critical_items=InventoryItem|filter_by_status:"Critical" %}
+            {% if critical_items %}
+              {% for item in critical_items %}
+                <div class="alert alert-danger" role="alert">
+                  The quantity of {{ item.name }} has reached a critical level!
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="alert alert-success" role="alert">
+                No items have reached critical level. All items are in a safe range.
+              </div>
+            {% endif %}
+          {% endwith %}
+        </div>
+        </div>
+                    </div>
+                </div>
+            </div>
+          
+      </div>
+    </section></div>
+   {% endblock %}
+ 
+{% block scripts %}
+<script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const table = document.querySelector('#inventoryTable tbody');
+        const rows = table.getElementsByTagName('tr');
+      
+        // وظيفة البحث
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          const selectedStatus = statusFilter.value;
+          
+          Array.from(rows).forEach(row => {
+            const name = row.cells[0].textContent.toLowerCase();
+            const status = row.cells[5].textContent.trim();
+            
+            const nameMatch = name.includes(searchTerm);
+            const statusMatch = !selectedStatus || status === selectedStatus;
+            
+            row.style.display = (nameMatch && statusMatch) ? '' : 'none';
+          });
+        });
+      
+        // وظيفة التصفية حسب الحالة
+        statusFilter.addEventListener('change', function() {
+          const searchTerm = searchInput.value.toLowerCase();
+          const selectedStatus = this.value;
+          
+          Array.from(rows).forEach(row => {
+            const name = row.cells[0].textContent.toLowerCase();
+            const status = row.cells[5].textContent.trim();
+            
+            const nameMatch = name.includes(searchTerm);
+            const statusMatch = !selectedStatus || status === selectedStatus;
+            
+            row.style.display = (nameMatch && statusMatch) ? '' : 'none';
+          });
+        });
+      });
+  </script>
+  
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% endblock %}
+  </body>
+</html>

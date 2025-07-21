@@ -1,0 +1,106 @@
+{% extends 'NiceAdmin/index.html' %}
+
+{% load static %}
+{% block content %}
+<div class="container">
+<body>
+  <div class="pagetitle">
+    
+        
+        <h1>Add Machine Child for "{{ parent_machine.name }}"</h1>
+          <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'machine_hierarchy' %}">Machines Management</a></li>  
+                <li class="breadcrumb-item active">Add Machine Child
+                </li>
+            </ol>
+          </nav>
+  </div>
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+               <i class="bi bi-diagram-2"> </i>  New Machine Child 
+            </h5>
+
+            {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+
+      <form method="post" action="{% url 'add_machine_child' parent_machine.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+       
+        
+        <!-- Parent Asset Display -->
+        <div class="alert alert-info mb-4">
+          <i class="bi bi-info-circle"></i> Parent Machine: <strong>"{{ parent_machine.name }}"</strong>
+        </div>
+
+        <div class="mb-3">
+          <label for="image" class="form-label">Image*</label>
+          <input type="file" class="form-control" id="image" name="image" accept="image/*">
+        </div>
+                        
+        <div class="row g-3">
+          <!-- Basic Information -->
+          <div class="col-md-6">
+            <label for="name" class="form-label">Part Name*</label>
+            <input type="text" class="form-control" id="name" name="name" 
+                   placeholder="Enter child asset name" required>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="serial_number" class="form-label">Serial Number</label>
+            <input type="text" class="form-control" id="serial_number" 
+                   name="serial_number" placeholder="Leave blank for auto-generation">
+          </div>
+          
+          <!-- Description -->
+          <div class="col-12">
+            <label for="description" class="form-label">Description*</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          </div>
+          
+          <!-- Status and Purchase Date -->
+          <div class="col-md-6">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" class="form-control" id="location" 
+                   name="location" value="{{ parent_machine.location }}" required>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="purchase_date" class="form-label">Purchase Date</label>
+            <input type="date" value="{{ parent_machine.purchase_date }}" class="form-control" id="purchase_date" name="purchase_date">
+          </div>
+          
+          <!-- Location -->
+   
+          
+          <!-- Action Buttons -->
+          <div class="mt-4 text-center">
+            <button type="submit" class="btn btn-primary">
+              Add Machine Child 
+            </button>
+            <button type="reset" class="btn btn-secondary">
+              Reset
+            </button>
+            <a href="{% url 'machine_hierarchy' %}" class="btn btn-outline-danger">
+              Cancel
+            </a>
+            
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+</section></div>{% endblock %}

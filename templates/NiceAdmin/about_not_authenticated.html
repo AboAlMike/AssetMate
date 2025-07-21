@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Pages / Login - AssetMate Bootstrap Template</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href='{% static "assets/vendor/bootstrap/css/bootstrap.min.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/bootstrap-icons/bootstrap-icons.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/boxicons/css/boxicons.min.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/quill/quill.snow.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/quill/quill.bubble.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/remixicon/remixicon.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/simple-datatables/style.css" %}' rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href='{% static "assets/css/style.css" %}' rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: AssetMate
+  * Template URL: https://bootstrapmade.com/assetmate-bootstrap-admin-html-template/
+  * Updated: Apr 20 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+<main>
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="card-title mb-4 text-center">About AssetMate CMMS</h2>
+            <p class="lead text-center">AssetMate is a Computerized Maintenance Management System (CMMS) designed to simplify asset management, schedule maintenance tasks, and improve team performance within organizations.</p>
+            <hr>
+            <h4>Main System Features:</h4>
+            <ul class="list-group mb-4">
+              <li class="list-group-item">
+                <strong>Asset Management:</strong>
+                <ul>
+                  <li>Add, edit, and delete assets.</li>
+                  <li>Categorize assets by type and location.</li>
+                  <li>View detailed information for each asset.</li>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <strong>Work Orders Management:</strong>
+                <ul>
+                  <li>Create new work orders for preventive or emergency maintenance.</li>
+                  <li>Track work order status (open, in progress, completed, etc.).</li>
+                  <li>Assign tasks to technical teams and monitor progress.</li>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <strong>Maintenance Management:</strong>
+                <ul>
+                  <li>Schedule preventive and corrective maintenance.</li>
+                  <li>Log failure reports and document solutions.</li>
+                  <li>Manage daily and weekly maintenance tasks.</li>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <strong>User & Permissions Management:</strong>
+                <ul>
+                  <li>Add and activate users (system admin, technician, regular employee, etc.).</li>
+                  <li>Define permissions for each user based on their role.</li>
+                  <li>Edit profile and change password.</li>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <strong>Inventory Management:</strong>
+                <ul>
+                  <li>Track spare parts and inventory.</li>
+                  <li>Log part usage and link it to maintenance tasks.</li>
+                  <li>Receive alerts when inventory is low.</li>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <strong>Reports & Statistics:</strong>
+                <ul>
+                  <li>Generate reports on assets, work orders, and technician performance.</li>
+                  <li>Display periodic statistics to monitor maintenance efficiency.</li>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <strong>Notifications & Alerts:</strong>
+                <ul>
+                  <li>Instant alerts for failures or new work orders.</li>
+                  <li>User notifications based on their assigned tasks.</li>
+                </ul>
+              </li>
+              <li class="list-group-item">
+                <strong>Permissions & Backup Management:</strong>
+                <ul>
+                  <li>Ability to backup and restore system data.</li>
+                  <li>Secure data and customize user permissions.</li>
+                </ul>
+              </li>
+            </ul>
+            <hr>
+            <p class="text-center">This system is designed to make maintenance management easier and more efficient, providing advanced tools for tracking all aspects of your organization's assets and their maintenance.</p>
+          </div>
+        </div>
+      </div>
+      <div class="text-center">
+        <p class="small mb-0">Back to <a href='{% url "loginpage" %}'>Login Page</a></p>
+      </div>
+    </div>
+    
+  </div>
+</main>
+
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src='{% static "assets/vendor/apexcharts/apexcharts.min.js" %}'></script>
+<script src='{% static "assets/vendor/bootstrap/js/bootstrap.bundle.min.js" %}'></script>
+<script src='{% static "assets/vendor/chart.js/chart.umd.js" %}'></script>
+<script src='{% static "assets/vendor/echarts/echarts.min.js" %}'></script>
+<script src='{% static "assets/vendor/quill/quill.js" %}'></script>
+<script src='{% static "assets/vendor/simple-datatables/simple-datatables.js" %}'></script>
+<script src='{% static "assets/vendor/tinymce/tinymce.min.js" %}'></script>
+<script src='{% static "assets/vendor/php-email-form/validate.js" %}'></script>
+
+<!-- Template Main JS File -->
+<script src='{% static "assets/js/main.js" %}'></script>
+</body>

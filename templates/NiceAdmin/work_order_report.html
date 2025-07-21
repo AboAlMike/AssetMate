@@ -1,0 +1,90 @@
+<!-- templates/NiceAdmin/work_order_report.html -->
+{% extends 'NiceAdmin/index.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="pagetitle">
+        <h1>Closing Report: {{ work_order.work_order_id }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'work-order-detail' work_order.pk %}">Work Order Detail</a></li>
+                <li class="breadcrumb-item active">Closing Report</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <br>
+                    <p><strong>Closed By:</strong> {{ report.closed_by.get_full_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <br>
+                    <p><strong>Closed Date:</strong> {{ report.closed_date }}</p>
+                </div>
+            </div>
+            <h5 class="card-title">Tasks Summary</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Status</th>
+                            <th>Materials</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in report.report_content.tasks_summary %}
+                        <tr>
+                            <td>{{ task.task_id }}</td>
+                            <td>{{ task.status }}</td>
+                            <td>
+                                <ul class="list-unstyled">
+                                    {% for material in task.materials %}
+                                    <li>
+                                        {{ material.item_name }}: 
+                                        {{ material.used }}/{{ material.reserved }}
+                                        ({{ material.status }})
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-unstyled">
+                                    {% for material in task.materials %}
+                                    <li>{{ material.action }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if report.notes %}
+            <div class="mt-4">
+                <h5>Closing Notes</h5>
+                <div class="bg-light p-3 rounded">
+                    {{ report.notes|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{% url 'work-order-detail' work_order.pk %}" 
+                   class="btn btn-primary">
+                    Back to Work Order
+                </a>
+                <button class="btn btn-outline-secondary" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Print Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

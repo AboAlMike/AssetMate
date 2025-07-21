@@ -1,0 +1,283 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="pagetitle">
+        <h1>Reported Failures</h1>
+        {% if request.user.role == 'regular_employee' %}
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active">Reported Failures</li>
+            </ol>
+        </nav>
+        {% else %}
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">home</a></li>
+                <li class="breadcrumb-item active">Reported Failures</li>
+            </ol>
+        </nav>
+        {% endif %}
+    </div>
+<style>
+    .btn-success {
+    --bs-btn-color: #198754;
+    --bs-btn-bg: #19875400;
+    --bs-btn-border-color: #19875400;
+    --bs-btn-hover-color: #198754;
+    --bs-btn-hover-bg: #15;
+    --bs-btn-hover-border-color: #146c4300;
+    --bs-btn-focus-shadow-rgb: 60, 153, 110;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #146c4300;
+    --bs-btn-active-border-color: #13653f00;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #19875400;
+    --bs-btn-disabled-border-color: #19875400; }
+</style>
+
+<section class="section">
+    <div class="row">
+        
+        
+        <!-- إحصائية الأعطال الكلية -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card info-card sales-card">
+                <div class="card-body">
+                    <h5 class="card-title">Total <span>| All</span></h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>{{ total_failures }}</h6>
+                            <span class="text-muted small pt-2 ps-1">Total Failures</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- إحصائية الأعطال الحرجة -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                    <h5 class="card-title">Critical <span>| High Priority</span></h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-exclamation-octagon text-danger"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>{{ critical_failures }}</h6>
+                            <span class="text-muted small pt-2 ps-1">Critical Failures</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- إحصائية الأعطال قيد المعالجة -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card info-card customers-card">
+                <div class="card-body">
+                    <h5 class="card-title">Pending <span>| Under Review</span></h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-hourglass-split text-warning"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>{{ pending_failures }}</h6>
+                            <span class="text-muted small pt-2 ps-1">Pending Resolution</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- إحصائية الأعطال المغلقة -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card info-card customers-card">
+                <div class="card-body">
+                    <h5 class="card-title">Resolved <span>| Completed</span></h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-check-circle text-success"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>{{ resolved_failures }}</h6>
+                            <span class="text-muted small pt-2 ps-1">Resolved Failures</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">List of Failures</h5>
+                        <a href="{% url 'report-failure'  %}"  class="btn btn-sm btn-primary mb-3">
+                            <i class="bi bi-plus"></i> Add new Report 
+                        </a>
+                        {% if messages %}
+                        {% for message in messages %}
+                          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Report Number</th>
+                                        <th>Title</th>
+                                        <th>Machine</th>
+                                        <th>Priority</th>
+                                        <th>Registration Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for failure in failures %}
+                                    {% if request.user == failure.reported_by or request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' %}
+                                    <tr>
+                                        <td>{{ failure.id }}</td>
+                                        <td>{{ failure.title }}</td>
+                                        <td>{{ failure.machine.name|default:"-" }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if failure.priority == 'high' %}danger{% elif failure.priority == 'medium' %}warning{% elif failure.priority == 'low' %}success{% else %}dark{% endif %}">
+                                                {{ failure.get_priority_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ failure.failure_date|date:"Y-m-d H:i" }}</td>
+                                        <td>
+                                          
+                                            <a href="#" title="view" class="btn btn-sm btn-primary" data-bs-toggle="modal" 
+                                            data-bs-target="#failureModal{{ failure.id }}">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                            {% if failure.work_order_created %}
+                                            <a class="btn btn-success"><i class="bi bi-check-circle"></i> </a>
+
+                                            {% endif %}
+                                        </td>{% endif %}
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">No failures recorded</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% for failure in failures %}
+    <!-- Failure Details Modal -->
+    <div class="modal fade" id="failureModal{{ failure.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Failure Details: #{{ failure.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Title:</strong> {{ failure.title }}</p>
+                            <p><strong>Machine:</strong> {{ failure.machine.name|default:"Not specified" }}</p>
+                            <p><strong>Serial Number:</strong> {{ failure.machine.serial_number|default:"-" }}</p>
+  
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Priority:</strong> 
+                                <span class="badge bg-{% if failure.priority == 'high' %}danger{% elif failure.priority == 'medium' %}warning{% elif failure.priority == 'low' %}success{% else %}dark{% endif %}">
+                                    {{ failure.get_priority_display }}
+                                </span>
+                            </p>
+                         
+                            <p><strong>Reported Date:</strong> {{ failure.failure_date|date:"Y-m-d H:i" }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    
+                    <h5>Description:</h5>
+                    <div class="alert alert-light">
+                        {{ failure.description|default:"No description provided" }}
+                    </div>
+                    
+                </div>
+                
+                <div class="modal-footer">
+                    {% if not failure.work_order_created  %}
+                    {% if request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' %}
+        <a href="{% url 'create-work-order-from-failure' failure.id %}" 
+           class="btn btn-primary">
+            <i class="bi bi-wrench"></i> Create Work Order
+        </a>
+        {% endif %}
+        {% if request.user == failure.reported_by or request.user.role == 'system_admin' %}
+        <a href="{% url 'edit-failure' failure.id  %}" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Edit Details
+        </a>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle"></i> 
+            A work order has been created for this failure
+        </div>
+    {% endif %}
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
+
+
+
+</div>
+
+<style>
+.info-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+.info-card:hover {
+    transform: translateY(-5px);
+}
+.card-icon {
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+}
+.sales-card .card-icon {
+    background-color: #f0f7ff;
+    color: #4154f1;
+}
+.revenue-card .card-icon {
+    background-color: #fff0f3;
+    color: #ff3d71;
+}
+.customers-card .card-icon {
+    background-color: #f6f6fe;
+    color: #5a8dee;
+}
+</style>
+{% endblock %}
+

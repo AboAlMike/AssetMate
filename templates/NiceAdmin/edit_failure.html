@@ -1,0 +1,105 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="pagetitle">
+        <h1>Edit Failure Report #{{ failure.id }}</h1>
+        {% if request.user.role == 'regular_employee' %}
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'view-failures' %}">Reported Failures</a></li>
+                <li class="breadcrumb-item active">Edit Report</li>
+            </ol>
+        </nav>  
+        {% else %}
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'view-failures' %}">Reported Failures</a></li>
+                <li class="breadcrumb-item active">Edit Report</li>
+            </ol>
+        </nav>
+        {% endif %}
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Edit Failure Details</h5>
+
+                        <form method="post" class="row g-3">
+                            {% csrf_token %}
+                            
+                            <!-- Title Field -->
+                            <div class="col-12">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.title.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Description Field -->
+                            <div class="col-12">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.description.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Machine Field -->
+                            <div class="col-md-6">
+                                <label for="{{ form.machine.id_for_label }}" class="form-label">Machine</label>
+                                {{ form.machine }}
+                                {% if form.machine.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.machine.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Priority Field -->
+                            <div class="col-md-6">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
+                                {{ form.priority }}
+                                {% if form.priority.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.priority.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Buttons -->
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a href="{% url 'view-failures' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Report Information</h5>
+                        <div class="alert alert-info">
+                            <p><strong>Report ID:</strong> {{ failure.id }}</p>
+                            <p><strong>Reported Date:</strong> {{ failure.failure_date|date:"Y-m-d H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section></div>
+
+{% endblock %}

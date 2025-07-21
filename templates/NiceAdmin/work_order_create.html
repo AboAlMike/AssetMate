@@ -1,0 +1,136 @@
+
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+<div class="pagetitle">
+    <h1>Create New Work Order</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'work-order-list' %}">Work Orders</a></li>
+            <li class="breadcrumb-item active">Create New Work Order</li>
+        </ol>
+    </nav> 
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Work Order Details</h5>
+                    
+                    <form method="post" class="row g-3">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <div class="col-md-6">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required placeholder="Enter work order title">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="machine" class="form-label">Machine</label>
+                            <select class="form-select" id="machine" name="machine" required>
+                                <option value="">Select Machine...</option>
+                                {% for machine in machines %}
+                                <option value="{{ machine.id }}">{{ machine.name }} ({{ machine.serial_number }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="description" class="form-label">Description*</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter work order description"></textarea>
+                        </div>
+                        
+                        <!-- Scheduling -->
+                        <div class="col-md-4">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-select" id="priority" name="priority" required>
+                                <option value="">Select Priority...</option>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="due_date" class="form-label">Due Date</label>
+                            <input type="date" class="form-control" id="due_date" name="due_date" required placeholder="Select due date">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="estimated_duration" class="form-label">Estimated Duration* (hours)</label>
+                            <input type="number" class="form-control" id="estimated_duration" name="estimated_duration" min="1" placeholder="Enter estimated duration in hours">
+                        </div>
+                        
+                        <!-- Assignment -->
+                        <div class="col-md-6">
+                            <label for="technician" class="form-label">Technician*</label>
+                            <select class="form-select" id="technician" name="technician">
+                                <option value="">Select Technician...</option>
+                                <option value="">Select Technician...</option>
+                                {% for tech in technicians %}
+                                <option value="{{ tech.Technicianid }}">{{ tech.user.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="location" class="form-label">Location*</label>
+                            <input type="text" class="form-control" id="location" name="location" placeholder="Enter location (optional)">
+                        </div>
+                        
+                        <!-- Submit Buttons -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Create Work Order</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                            <a href="{% url 'work-order-list' %}" class="btn btn-outline-danger">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-fill location when machine is selected
+    const machineSelect = document.getElementById('machine');
+    const locationField = document.getElementById('location');
+    
+    if (machineSelect && locationField) {
+        machineSelect.addEventListener('change', function() {
+            const machineId = this.value;
+            if (machineId) {
+                fetch(`/api/machines/${machineId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        locationField.value = data.location || '';
+                    });
+            } else {
+                locationField.value = '';
+            }
+        });
+    }
+    
+    // Set default due date to tomorrow
+    const dueDateField = document.getElementById('due_date');
+    if (dueDateField) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dueDateField.valueAsDate = tomorrow;
+    }
+});
+</script>
+
+{% endblock %}

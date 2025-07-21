@@ -1,0 +1,125 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+
+  <div class="pagetitle">
+    <h1>Edit Technician</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'technician-list' %}">Technicians Management</a></li>
+            <li class="breadcrumb-item active">Edit Technician</li>
+        </ol>
+    </nav>
+  </div>
+
+  <section class="section">
+    <div class="row">
+         <div class="col-lg-12">
+             <div class="card">
+                 <div class="card-body">
+                     <h1 class="card-title">Technician info</h1>
+
+            <form method="post" class="row g-3" action="">
+              {% csrf_token %}
+              
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    <i class="bi {% if message.tags == 'error' %}bi-exclamation-triangle{% else %}bi-check-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+
+              <!-- Basic Information -->
+              <div class="col-md-6">
+                <label for="first_name" class="form-label required-field">First Name</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" 
+                       value="{{ technician.user.first_name }}" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="last_name" class="form-label required-field">Last Name</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" 
+                       value="{{ technician.user.last_name }}" required>
+              </div>
+
+              <div class="col-md-6 mt-3">
+                <label for="email" class="form-label required-field">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" 
+                       value="{{ technician.user.email }}" required>
+              </div>
+              
+              <div class="col-md-6 mt-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phonenumber" name="phonenumber" placeholder="Enter phone number" 
+                       value="{{ technician.phonenumber|default_if_none:'' }}" autocomplete="off" required>
+              </div>
+
+              <!-- Specialization Section -->
+
+
+                <div class="specialization-card new-specialization">
+                  <div class="d-flex align-items-center mb-3">
+                  
+                    <h6 class="mb-0"> Specialization</h6>
+                  </div>
+                  <input type="text" class="form-control" id="specialization" 
+                         name="specialization" placeholder="Enter specialization" 
+                         value="{{ technician.specialization|default_if_none:'' }}" autocomplete="off" required>
+                  <small class="text-muted">Enter specialization</small>
+                </div>
+
+                <!-- Notes Field -->
+                <div class="col-md-12 mt-3">
+                  <label for="notes" class="form-label">Notes*</label>
+                  <textarea class="form-control" id="notes" placeholder="Enter Notes about this technician" name="notes" rows="3">{{ technician.notes|default_if_none:'' }}</textarea>
+                </div>
+
+              <!-- Action Buttons -->
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary">
+                     Save Changes
+                  </button>
+                  <a href="{% url 'technician-list' %}" class="btn btn-outline-danger">
+                    <i class="bi bi-x-circle "></i> Cancel
+                  </a>
+                  
+                </div>
+              </div>
+            </form>
+      </div> </div>
+    </div>
+  </section>
+</body>
+</div>
+
+{% endblock %}
+
+{% block script %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const existingSelect = document.getElementById('existing_specialization');
+      const newInput = document.getElementById('new_specialization');
+
+      // Handle specialization selection
+      existingSelect.addEventListener('change', function() {
+        if (this.value) {
+          newInput.value = '';
+        }
+      });
+
+      newInput.addEventListener('input', function() {
+        if (this.value) {
+          existingSelect.value = '';
+        }
+      });
+    });
+  </script>
+{% endblock %}
+</body>
+</html>

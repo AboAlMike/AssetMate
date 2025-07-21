@@ -1,0 +1,130 @@
+{% extends 'NiceAdmin/index.html' %}
+{% block content %}
+{% load static %}
+{% load tz %}
+<div class="container">
+<div class="pagetitle">        
+            <h1>Add New Machine</h1>
+       <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'machine_hierarchy' %}">Machines Management</a></li>  
+                <li class="breadcrumb-item"><a href="{% url 'select_category' %}">Select Asset Category</a></li>
+                <li class="breadcrumb-item active">Add New Machine</li>
+            </ol>
+        </nav>
+</div>
+
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-plus-square">   </i>Machine Informations
+                    </h5>
+            
+                    <form method="post" enctype="multipart/form-data">
+                      {% csrf_token %}
+
+                      
+                      
+                      <div class="mb-3">
+                        <label for="image" class="form-label">Image*</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                      </div>
+              <!-- Basic Information -->
+              <div class="mb-4">
+          
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Machine Name</label>
+                    <input type="text" class="form-control" name="name" 
+                           placeholder="Enter asset name" required>
+                  </div>
+                  
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Serial Number</label>
+                    <input type="text" class="form-control" name="serial_number" 
+                           placeholder="Enter serial number" required>
+                  </div>
+                </div>
+
+          
+                <div class="row">
+                
+                  <div class="col-md-6 mb-3">
+                    <label for="purchase_date" class="form-label">Purchase Date</label>
+            <input type="date" class="form-control" id="purchase_date" name="purchase_date" required>
+
+             
+              </div>
+
+              <!-- Location -->
+              <div class="col-md-6 mb-3">
+                <label for="purchase_date" class="form-label">Location</label>
+                    <input type="text" class="form-control" name="location" 
+                           placeholder="Enter location" required>
+                </div>
+              </div>
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Description*</label>
+                <textarea class="form-control" name="description" 
+                           placeholder="Enter description"></textarea>
+              </div>
+            </div> 
+         
+              
+                <h6>Machine Parts in {{ category.name }} Category</h6>
+                <div class="alert alert-info">
+                  {% if category.get_descendants %}
+                    <ul class="list-group">
+                      {% for child in category.get_descendants %}
+                        <li class="list-group-item">
+                          <i class="bi bi-arrow-right-short"></i> {{ child.name }}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <p class="text-muted mb-0">No parts defined for this category</p>
+                  {% endif %}
+                </div>
+             
+
+              <!-- Action Buttons -->
+             <div class="mt-4 text-center">
+               <button type="submit" class="btn btn-primary">
+                                Add New Machine 
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                Reset
+                            </button>
+                            <a href="{% url 'machine_hierarchy' %}" class="btn btn-outline-danger">
+                                Cancel
+                            </a>
+                           
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ </div>
+
+ {% endblock %}
+
+ {% block script %}
+ <script>
+  // ضبط تاريخ اليوم بشكل افتراضي في حقل التاريخ
+  document.addEventListener('DOMContentLoaded', function() {
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var dd = String(today.getDate()).padStart(2, '0');
+    var currentDate = yyyy + '-' + mm + '-' + dd;
+    document.getElementById('purchase_date').value = currentDate;
+  });
+</script>
+{% endblock %}

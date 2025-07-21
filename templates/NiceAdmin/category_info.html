@@ -1,0 +1,70 @@
+{% extends 'NiceAdmin/index.html' %}
+{% block content %}
+
+<div class="container">
+<div class="pagetitle">
+    
+            <h1>Edit Asset : "{{ asset.name }}"</h1></h2>
+        
+       <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'asset-list' %}">Asset Categorys</a></li>
+            <li class="breadcrumb-item active">Edit Asset Category</li>
+        </ol>
+    </nav>
+    
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-pencil-square"></i> Edit Asset Details
+                    </h5>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} mb-4">
+                           {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" action="{% url 'edit_asset' asset.assetid %}">
+                        {% csrf_token %}
+                        
+
+                        <!-- Basic Information -->
+                        <div class="mb-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Asset Name</label>
+                                    <div  class="form-control "
+                                           name="name" value="{{ asset.name }}" > {{ asset.name }}
+                                    </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                    <label class="form-label">Description</label>
+                                    <div class="form-control" 
+                                           name="description"> {% if asset.description %} {{ asset.description }} {% else %} "No description provided" {% endif %}
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <a href="{% url 'edit_asset' asset.assetid %}" class="btn btn-primary">                          
+                                <i class="bi bi-pencil"></i> Edit        
+                            </a>
+                            <a href="{% url 'asset-list' %}" class="btn btn-outline-danger">
+                                Cancel
+                            </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section></div>{% endblock %}

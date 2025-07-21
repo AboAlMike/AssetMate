@@ -1,0 +1,34 @@
+{% extends 'NiceAdmin/index.html' %}
+{% block content %}
+<div class="container mt-4">
+  <div class="pagetitle">
+    <h1>User Profile</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'user-list' %}">Users</a></li>
+        <li class="breadcrumb-item active">Profile</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title mb-4">{{ user.get_full_name }} <small class="text-muted">({{ user.username }})</small></h3>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>Email:</b> {{ user.email }}</li>
+            <li class="list-group-item"><b>Role:</b> {{ user.get_role_display }}</li>
+            <li class="list-group-item"><b>Status:</b> {% if user.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-danger">Inactive</span>{% endif %}</li>
+            <li class="list-group-item"><b>Date Joined:</b> {{ user.date_joined|date:"Y-m-d H:i" }}</li>
+          </ul>
+          <div class="mt-4 text-right">
+            <a href="{% url 'user-update' user.id %}" class="btn btn-outline-primary">Edit</a>
+            <a href="{% url 'user-list' %}" class="btn btn-secondary">Back to List</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

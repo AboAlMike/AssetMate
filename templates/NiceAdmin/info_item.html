@@ -1,0 +1,98 @@
+{% extends 'NiceAdmin/index.html' %}
+{% block content %}
+
+<div class="container">
+<body>
+  <div class="pagetitle">
+
+ 
+        <h1>Item Details: "{{ item.name }}"</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'Inventory_Tracking' %}">Inventory Tracking</a></li>
+            <li class="breadcrumb-item active">Item Info</li>
+        </ol>
+    </nav> 
+  </div>
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-info-circle"> </i> Item Information
+            </h5>
+
+            <!-- Basic Information -->
+
+   
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Item Name</label>
+                  <div class="form-control bg-light">{{ item.name }}</div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Serial Number</label>
+                  <div class="form-control bg-light">{{ item.serial_number }}</div>
+                </div>
+              </div>
+
+
+ 
+              
+              <div class="row"><h6>Description</h6>
+                <div class="col-12 mb-3">
+                  <div class="form-control bg-light" style="min-height: 100px;">{{ item.description|default:"-" }}</div>
+                </div>
+              </div>
+
+
+            <!-- Inventory Details -->
+
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Quantity</label>
+                  <div class="form-control bg-light {% if item.quantity <= item.minimumStockLevel %}text-danger{% endif %}">
+                    {{ item.quantity }}
+                    {% if item.quantity <= item.minimumStockLevel %}
+                      <span class="badge bg-danger ms-2">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Low stock!
+                      </span>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Location</label>
+                  <div class="form-control bg-light">{{ item.location }}</div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Minimum Stock Level</label>
+                  <div class="form-control bg-light">{{ item.minimumStockLevel }}</div>
+                </div>
+              </div>
+
+
+            
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+              <a href="{% url 'edit_item' item.itemId %}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil"></i> Edit Item
+              </a>
+              <a href="{% url 'Inventory_Tracking' %}" class="btn btn-outline-secondary">
+                <i class="bi bi"></i> Back
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body></div>
+</html>{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Complete Technician Information</h5>
+        </div>
+        <div class="card-body">
+          
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="mb-3">
+              <label class="form-label">Specialization</label>
+              {{ form.existing_specialization }}
+              {{ form.existing_specialization.errors }}
+              <span class="mx-2">or</span>
+              {{ form.new_specialization }}
+              {{ form.new_specialization.errors }}
+              <div id="specialization-error" class="text-danger small mt-1" style="display:none;"></div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Phone Number</label>
+              {{ form.phonenumber }}
+              {{ form.phonenumber.errors }}
+            </div>
+            <button type="submit" class="btn btn-success w-100">Save Technician Info</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  function specializationMutualExclusive() {
+    var select = document.getElementById('id_existing_specialization');
+    var input = document.getElementById('id_new_specialization');
+    if(select && input) {
+      select.addEventListener('change', function() {
+        if(select.value) {
+          input.value = '';
+          input.disabled = true;
+        } else {
+          input.disabled = false;
+        }
+      });
+      input.addEventListener('input', function() {
+        if(input.value) {
+          select.value = '';
+          select.disabled = true;
+        } else {
+          select.disabled = false;
+        }
+      });
+    }
+  }
+  function validateTechnicianForm(e) {
+    var select = document.getElementById('id_existing_specialization');
+    var input = document.getElementById('id_new_specialization');
+    var errorDiv = document.getElementById('specialization-error');
+    if(select && input && errorDiv) {
+      if((!select.value && !input.value) || (select.value && input.value)) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = 'Please choose an existing specialization OR enter a new one, not both.';
+        e.preventDefault();
+        return false;
+      } else {
+        errorDiv.style.display = 'none';
+      }
+    }
+    return true;
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    specializationMutualExclusive();
+    var form = document.querySelector('form');
+    if(form) {
+      form.addEventListener('submit', validateTechnicianForm);
+    }
+  });
+</script>
+{% endblock %}

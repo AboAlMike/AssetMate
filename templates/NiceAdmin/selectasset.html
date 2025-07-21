@@ -1,0 +1,68 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+<body>
+  <div class="pagetitle">
+    
+        <h1>Select Asset Category</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'machine_hierarchy' %}">Machines Management</a></li>  
+                <li class="breadcrumb-item active">Select Asset Category</li>
+            </ol>
+        </nav>
+  </div>
+<section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-ui-radios"> </i>Choose the  category for your new asset
+            </h5>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            <i class="bi {% if message.tags == 'error' %}bi-exclamation-triangle{% else %}bi-check-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+          <label for="id_category" class="form-label fw-bold">Category</label>
+          <select class="form-select" id="id_category" name="category" required>
+            {% for value, label in form.category.field.choices %}
+              <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endfor %}
+          </select>
+          {% if form.category.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.category.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="action-buttons text-center ">
+          <button type="submit" class="btn btn-primary px-4">
+            Next <i class="bi bi-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body></div>
+</html>
+{% endblock %}

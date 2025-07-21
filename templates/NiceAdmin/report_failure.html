@@ -1,0 +1,127 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="pagetitle">
+        <h1>Report Machine Failure</h1>
+        {% if request.user.role == 'regular_employee' %}
+
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'view-failures' %}">Reported Failures</a></li>
+                <li class="breadcrumb-item active">Report Machine Failure</li>
+            </ol>
+        </nav>
+        {% else %}
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'view-failures' %}">Reported Failures</a></li>
+                <li class="breadcrumb-item active">Report Machine Failure</li>
+            </ol>
+        </nav>
+        {% endif %}
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Failure Data</h5>
+
+                        <form method="post" class="row g-3">
+                            {% csrf_token %}
+                            
+                            <!-- حقل عنوان العطل -->
+                            <div class="col-12">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">Failure Title</label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.title.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- حقل الوصف -->
+                            <div class="col-12">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Failure Description*</label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.description.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- حقل الآلة -->
+                            <div class="col-md-6">
+                                <label for="{{ form.machine.id_for_label }}" class="form-label">Machine</label>
+                                {{ form.machine }}
+                                {% if form.machine.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.machine.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- حقل الأولوية -->
+                            <div class="col-md-6">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
+                                {{ form.priority }}
+                                {% if form.priority.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.priority.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- زر التسجيل -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Report Failure</button>
+                                <button type="reset" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </form><!-- End Multi Columns Form -->
+
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Failure Reporting Instructions</h5>
+                        <div class="alert alert-info">
+                            <h6>Important Instructions:</h6>
+                            <ul>
+                                <li>Enter a clear and detailed description of the failure</li>
+                                <li>Select the machine precisely from the list</li>
+                                <li>Choose an appropriate priority based on the impact of the failure on work</li>
+                                <li>Priority "critical" for failures that stop production entirely</li>
+                                <li>Priority "medium" for failures that affect work efficiency</li>
+                                <li>Priority "low" for simple failures that do not affect work</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add machine check when loading the page
+    const machineSelect = document.getElementById('{{ form.machine.id_for_label }}');
+    
+    if (machineSelect) {
+        // يمكنك إضافة أي تفاعل إضافي هنا
+    }
+});
+</script>
+{% endblock %}
+

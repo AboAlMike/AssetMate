@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Pages / Login - AssetMate Bootstrap Template</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href='{% static "assets/vendor/bootstrap/css/bootstrap.min.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/bootstrap-icons/bootstrap-icons.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/boxicons/css/boxicons.min.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/quill/quill.snow.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/quill/quill.bubble.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/remixicon/remixicon.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/simple-datatables/style.css" %}' rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href='{% static "assets/css/style.css" %}' rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: AssetMate
+  * Template URL: https://bootstrapmade.com/assetmate-bootstrap-admin-html-template/
+  * Updated: Apr 20 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+    <main>
+        <div class="container">
+          <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="container">
+              <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-12 d-flex flex-column">
+                  <div class="d-flex justify-content-center py-4">
+                    <a href="index.html" class="logo d-flex align-items-center w-auto">
+                      <img src="assets/img/logo.png" alt="">
+                      <span class="d-none d-lg-block">AssetMate</span>
+                    </a>
+                  </div><!-- End Logo -->
+                  <div class="card mb-3">
+                    <div class="card-body">
+        <div class="pt-4 pb-2">
+          <h5 class="card-title text-center pb-0 fs-4">Register Request</h5>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+        </div>
+        <div class="card-body">
+          <form class="row g-3 needs-validation" method="POST" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="col-6">
+              <label for="id_username" class="form-label">Username</label>
+              {{ form.username }}
+              {{ form.username.errors }}
+            </div>
+            <div class="col-6">
+                <label for="id_email" class="form-label">Email</label>
+                {{ form.email }}
+                {{ form.email.errors }}
+              </div>
+            <div class="col-6">
+                <label for="id_first_name" class="form-label">First Name</label>
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+            </div>
+            <div class="col-6">
+                <label for="id_last_name" class="form-label">Last Name</label>
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+            </div>
+
+                        <div class="col-6">
+              <label for="id_password1" class="form-label">Password</label>
+              {{ form.password1 }}
+              {{ form.password1.errors }}
+            </div>
+            <div class="col-6">
+              <label for="id_password2" class="form-label">Confirm Password</label>
+              {{ form.password2 }}
+              {{ form.password2.errors }}
+            </div>
+            <div class="col-12">
+              <label for="id_job_title" class="form-label"> Job Title</label>
+              {{ form.job_title }}
+              {{ form.job_title.errors }}
+            </div>
+            
+            <div id="technician-fields" style="display: none;">
+                <div class="col-12">
+                    <label for="id_existing_specialization" class="form-label">Specialization</label>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        {{ technician_form.existing_specialization }}
+                        <span class="text-muted small">or</span>
+                        {{ technician_form.new_specialization }}
+                    </div>
+                    {% if technician_form.existing_specialization.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ technician_form.existing_specialization.errors }}
+                    </div>
+                    {% endif %}
+                    {% if technician_form.new_specialization.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ technician_form.new_specialization.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-12">
+                    <label for="id_phonenumber" class="form-label">Phone Number</label>
+                    {{ technician_form.phonenumber }}
+                    {% if technician_form.phonenumber.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ technician_form.phonenumber.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-12">
+            <button type="submit" class="btn btn-primary w-100">Send Request</button><br>
+            </div>
+            <div class="col-12">
+                <p class="small mb-0">Back To <a href='{% url "loginpage" %}'>Login Page</a></p>
+            </div>
+          </form>
+        </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</main>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src='{% static "assets/vendor/apexcharts/apexcharts.min.js" %}'></script>
+<script src='{% static "assets/vendor/bootstrap/js/bootstrap.bundle.min.js" %}'></script>
+<script src='{% static "assets/vendor/chart.js/chart.umd.js" %}'></script>
+<script src='{% static "assets/vendor/echarts/echarts.min.js" %}'></script>
+<script src='{% static "assets/vendor/quill/quill.js" %}'></script>
+<script src='{% static "assets/vendor/simple-datatables/simple-datatables.js" %}'></script>
+<script src='{% static "assets/vendor/tinymce/tinymce.min.js" %}'></script>
+<script src='{% static "assets/vendor/php-email-form/validate.js" %}'></script>
+
+<!-- Template Main JS File -->
+<script src='{% static "assets/js/main.js" %}'></script>
+
+</body>
+
+</html>
+
+<!-- في قسم JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const jobTitleSelect = document.getElementById('id_job_title');
+        const techFields = document.getElementById('technician-fields');
+        
+        function toggleTechnicianFields() {
+            if (!jobTitleSelect || !techFields) return;
+            
+            const isTechnician = jobTitleSelect.value === 'maintenance_technician';
+            techFields.style.display = isTechnician ? 'block' : 'none';
+            
+            // Update required attributes
+            const requiredFields = techFields.querySelectorAll('input, select, textarea');
+            requiredFields.forEach(field => {
+                field.required = isTechnician;
+            });
+            
+            // Update URL without reload
+            const url = new URL(window.location);
+            if (isTechnician) {
+                url.searchParams.set('job_title', jobTitleSelect.value);
+            } else {
+                url.searchParams.delete('job_title');
+            }
+            window.history.replaceState({}, '', url);
+        }
+        
+        // Initialize fields
+        function initializeFields() {
+            // Set initial state from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('job_title') && jobTitleSelect) {
+                jobTitleSelect.value = urlParams.get('job_title');
+            }
+            
+            toggleTechnicianFields();
+            
+            // Specialization fields mutual exclusion
+            const existingSpec = document.getElementById('id_existing_specialization');
+            const newSpec = document.getElementById('id_new_specialization');
+            
+            if (existingSpec && newSpec) {
+                existingSpec.addEventListener('change', function() {
+                    if (this.value) {
+                        newSpec.value = '';
+                        newSpec.disabled = true;
+                    } else {
+                        newSpec.disabled = false;
+                    }
+                });
+                
+                newSpec.addEventListener('input', function() {
+                    if (this.value) {
+                        existingSpec.value = '';
+                        existingSpec.disabled = true;
+                    } else {
+                        existingSpec.disabled = false;
+                    }
+                });
+            }
+        }
+        
+        // Event listeners
+        if (jobTitleSelect) {
+            jobTitleSelect.addEventListener('change', toggleTechnicianFields);
+            toggleTechnicianFields(); // للتأكد من الحالة عند التحميل
+
+        }
+        
+        // Initialize on load
+        initializeFields();
+    });
+    </script>

@@ -1,0 +1,230 @@
+{% extends 'NiceAdmin/index.html' %}
+
+{% load mptt_tags %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Assets Management</title>
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        
+
+
+        <style>
+ 
+            .tree-item {
+                display: flex;
+                align-items: center;
+            }
+            .toggle-icon {
+                cursor: pointer;
+                margin-right: 5px;
+                font-weight: bold;
+                width: 15px;
+                display: inline-block;
+                text-align: center;
+            }
+            .toggle-spacer {
+                width: 15px;
+                display: inline-block;
+            }
+            .parent-node {
+                font-weight: bold;
+            }
+            .tree-table tr.level-0 td {
+            background-color: #f8f8f8 !important;
+            }
+            .tree-table tr.level-1 td {
+                background-color: #e8e8e8 !important;
+            }
+            .tree-table tr.level-2 td {
+                background-color: #d8d8d8 !important;
+            }
+            .tree-table tr.level-3 td{ 
+                background-color: #c8c8c8 !important;
+            }
+            .tree-table tr.level-4 td{ 
+                background-color: #b8b8b8 !important;
+            }
+            .tree-table tr.level-5 td{ 
+                background-color: #a8a8a8 !important;
+            }
+            .tree-table tr.level-6 td{ 
+                background-color: #e8e8e8 !important;
+            }
+            .tree-table tr.level-7 td{ 
+                background-color: #d8d8d8 !important;
+            }
+            .tree-table tr.level-8 td{ 
+                background-color: #c8c8c8 !important;
+            }
+            .tree-table tr.level-9 td{ 
+                background-color: #b8b8b8 !important;
+            }
+            .tree-table tr.level-10 td{ 
+                background-color: #a8a8a8 !important;
+            }
+            .tree-table tr.level-11 td{ 
+                background-color: #989898 !important;
+            }
+            .tree-table tr.level-12 td{ 
+                background-color: #888888 !important;
+            }
+            .tree-table tr.level-13 td{ 
+                background-color: #787878 !important;
+            }
+            .child-nodes {
+                background-color: inherit !important;
+            }
+            .level-0 { margin-left: 0px; }
+            .level-1 { margin-left: 20px; }
+            .level-2 { margin-left: 40px; }
+        </style>  
+    </head>
+    <div class="container">
+    <div class="pagetitle">
+        <h1>Machines Management</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item active">Machines Management</li>
+            </ol>
+        </nav>
+    </div>
+    
+       <section class="section">
+       <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title">Machines Table</h1>
+                        <div class="row mb-3">
+                            <div class="col-md-4 g-3">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                            </div>
+                            <div class="col-md-4 g-3">
+                                <select id="assetClassFilter" class="form-control">
+                                        <option value="">All Asset Classes</option>
+                                    {% for Asset_class in Asset_class %}
+                                        <option value="{{ Asset_class }}">{{ Asset_class}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 text-end g-3">
+                            <a href="{% url 'select_category' %}"><button class="btn btn-primary" >
+                              <i class="bi bi-plus-circle"></i> Add New Machine</button>
+                            </a>
+                        </div>
+            
+                            
+                        </div>
+                        {% if messages %}
+                        {% for message in messages %}
+                          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+                          </div>
+                        {% endfor %}
+                      {% endif %} 
+                      <div class="table-responsive">
+            <table class="table tree-table" id="machineTable">
+                <thead> 
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Serial Number</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for machine in machines %}
+                        {% include 'NiceAdmin/machine_row.html' with machine=machine level=0 %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>            
+            
+            
+            
+        </div>
+
+   
+    </div>
+</html>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+$("#assetClassFilter").change(function() {
+    const value = $(this).val().toLowerCase().trim().replace(/•/g, '').replace(/\s+/g, ' ').trim();
+    
+    if (value === "") {
+        $("table tbody tr").show();
+    } else {
+        $("table tbody tr").each(function() {
+            const rowText = $(this).find("td:eq(1)").text().toLowerCase().trim().replace(/•/g, '').replace(/\s+/g, ' ').trim();
+            $(this).toggle(rowText.includes(value));
+        });
+    }
+});
+$(document).ready(function(){
+    // البحث
+    $("#searchInput").on("keyup", function() {
+        const value = $(this).val().toLowerCase();
+        $("table tbody tr").filter(function() {
+            $(this).toggle($(this).find("td:eq(0)").text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    // إخفاء جميع الأبناء عند التحميل
+    $('tr[data-parent-id]:not([data-parent-id=""])').hide();
+
+    // إعداد نقاط التبديل - استخدم delegation للعناصر الديناميكية
+    $(document).ready(function(){
+    // إخفاء الأبناء عند التحميل
+    $('tr[data-parent-id]:not([data-parent-id=""])').hide();
+
+    // معالجة النقر على الأيقونة
+    $(document).on('click', '.toggle-icon', function(e) {
+        e.stopImmediatePropagation();
+        const $icon = $(this);
+        const nodeId = $icon.closest('tr').data('node-id');
+        
+        $(`tr[data-parent-id="${nodeId}"]`).each(function() {
+            const isVisible = $(this).is(':visible');
+            if(isVisible) {
+                $(this).hide();
+                $icon.removeClass('fa-minus').addClass('fa-plus');
+                hideAllDescendants($(this).data('node-id'));
+            } else {
+                $(this).show();
+                $icon.removeClass('fa-plus').addClass('fa-minus');
+            }
+        });
+    });
+    
+    function hideAllDescendants(parentId) {
+        $(`tr[data-parent-id="${parentId}"]`).hide().find('.toggle-icon')
+            .removeClass('fa-minus')
+            .addClass('fa-plus')
+            .each(function() {
+                hideAllDescendants($(this).closest('tr').data('node-id'));
+            });
+    }
+});
+});
+</script>
+{% endblock %}

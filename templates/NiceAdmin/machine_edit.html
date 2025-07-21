@@ -1,0 +1,135 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="container">
+<body>
+  <div class="pagetitle">
+
+      
+      <h1>Edit Machine : "{{ machine.name }}"</h1>
+       <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'machine_hierarchy' %}">Machines Management</a></li>  
+                <li class="breadcrumb-item active">Edit Machine</li>
+            </ol>
+        </nav>
+
+  </div>
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-pencil-square"> </i> Machine Details
+            </h5>
+
+           {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+              </div>
+            {% endfor %}
+          {% endif %} 
+
+            <form method="post" action="{% url 'edit_machine' machine.id %}" enctype="multipart/form-data">
+              {% csrf_token %}
+
+              <div class="mb-3">
+                <label for="image" class="form-label">Image*</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+              </div>
+              
+              {% if machine.image %}
+              <div class="mb-3 text-center">
+                <img src="{{ machine.image.url }}" alt="Machine Image"  class="img-fluid rounded" style="max-height: 250px;">
+              </div>
+              {% else %}
+              <div class="mb-3 text-center">
+                <img src="{% static 'NiceAdmin/assets/img/no-image.png' %}" alt="No Image" class="img-fluid rounded" style="max-height: 250px;">
+              </div>
+              {% endif %}
+         
+              <div class="mb-4">
+                
+                
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Machine Name</label>
+                    <input type="text" class="form-control" name="name" 
+                           value="{{ machine.name }}" required>
+                  </div>
+                  
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Serial Number</label>
+                    <div class="form-control bg-light">
+                      {{ machine.serial_number }}
+                      <input type="hidden" name="serial_number" value="{{ machine.serial_number }}">
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status" required>
+                      <option value="Operational" {% if machine.status == 'Operational' %}selected{% endif %}>
+                        <i class="bi bi-check-circle-fill text-success"></i> Operational
+                      </option>
+                      <option value="Under Maintenance" {% if machine.status == 'Under Maintenance' %}selected{% endif %}>
+                        <i class="bi bi-tools text-warning"></i> Under Maintenance
+                      </option>
+                      <option value="Out of Order" {% if machine.status == 'Out of Order' %}selected{% endif %}>
+                        <i class="bi bi-tools text-warning"></i> Out of Order
+                      </option>
+                      <option value="Retired" {% if machine.status == 'Retired' %}selected{% endif %}>
+                        <i class="bi bi-x-circle-fill text-danger"></i> Retired
+                      </option>
+                    </select>
+                  </div>
+                
+
+              <!-- Location -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Location</label>
+                  <div class="">
+                    <input type="text" class="form-control" name="location" 
+                           value="{{ machine.location }}" required>
+                  </div>
+              </div>
+              <!-- Description -->
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Description*</label>
+                <textarea class="form-control" name="description" rows="3">{{ machine.description }}</textarea>
+              </div>
+              </div>
+              </div>
+              <!-- Action Buttons -->
+              <div class="mt-4 text-center">
+                            <button type="submit" class="btn btn-primary">
+                                Save Changes
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                Reset
+                            </button>
+                            <a href="{% url 'machine_hierarchy' %}" class="btn btn-outline-danger">
+                                Cancel
+                            </a>
+                            
+                        </div>
+                    </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</form>
+
+</body></div>
+</html>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'NiceAdmin/index.html' %}
+{% block content %}
+<div class="container">
+<div class="pagetitle">
+
+       <h1>Add New Asset part</h1>
+     <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'asset-list' %}">Asset</a></li>
+            <li class="breadcrumb-item active">Add new Asset part</li>
+        </ol>
+    </nav>
+</div>
+
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-diagram-2"> </i> part Information
+                    </h5>
+                    <div class="mb-4">
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle"></i> Part of : <strong>"{{ parent.name }}"</strong>
+                        </div>
+                        {% if messages %}
+                        {% for message in messages %}
+                          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            
+                            {% if form.errors %}
+                                <div class="alert alert-danger">
+                                    Please correct the errors below
+                                </div>
+                            {% endif %}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Asset Name</label>
+                                    <input type="text" class="form-control {% if form.name.errors %}is-invalid{% endif %}" 
+                                           name="name" value="{{ form.name.value|default_if_none:'' }}" required>
+                                    {% if form.name.errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form.name.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                              
+                                
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">Description*</label>
+                                    <textarea class="form-control" name="description" rows="3"></textarea>
+                                </div>
+                       
+                        <!-- Additional Information -->
+                 
+                                
+                            
+                        <!-- Action Buttons -->
+                        <div class="mt-4 text-center">
+                            <button type="submit" class="btn btn-primary">
+                                Add Asset Child 
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                Reset
+                            </button>
+                            <a href="{% url 'asset-list' %}" class="btn btn-outline-danger">
+                                Cancel
+                            </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+{% endblock %}

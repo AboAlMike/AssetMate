@@ -1,0 +1,101 @@
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="pagetitle">
+        <h1>Create Work Order from Failure #{{ failure.id }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'view-failures' %}">Failures</a></li>
+                <li class="breadcrumb-item active">Create Work Order</li>
+            </ol>
+        </nav>
+    </div>
+    {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Work Order Details</h5>
+                        
+                        <form method="post" class="row g-3">
+                            {% csrf_token %}
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Related Failure</label>
+                                <input type="text" class="form-control" 
+                                       value="#{{ failure.id }} - {{ failure.title }}" disabled>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Machine</label>
+                                <input type="text" class="form-control" 
+                                       value="{{ failure.machine.name }} ({{ failure.machine.serial_number }})" disabled>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="{{ form.title.id_for_label }}" class="form-label">Work Order Title</label>
+                                {{ form.title }}
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                {{ form.description }}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
+                                {{ form.priority }}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="{{ form.technician.id_for_label }}" class="form-label">Technician</label>
+                                {{ form.technician }}
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label for="{{ form.due_date.id_for_label }}" class="form-label">Due Date</label>
+                                {{ form.due_date }}
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary">Create Work Order</button>
+                                <a href="{% url 'view-failures' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Failure Summary</h5>
+                        <div class="alert alert-info">
+                            <p><strong>Failure ID:</strong> #{{ failure.id }}</p>
+                            <p><strong>Reported On:</strong> {{ failure.failure_date|date:"Y-m-d H:i" }}</p>
+                            <p><strong>Priority:</strong> 
+                                <span class="badge bg-{% if failure.priority == 'high' %}danger{% elif failure.priority == 'medium' %}warning{% else %}success{% endif %}">
+                                    {{ failure.get_priority_display }}
+                                </span>
+                            </p>
+                            <hr>
+                            <h6>Failure Description:</h6>
+                            <p>{{ failure.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section></div>
+
+{% endblock %}

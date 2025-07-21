@@ -1,0 +1,156 @@
+{% extends 'NiceAdmin/index.html' %}
+
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+<div class="container">
+  <div class="pagetitle">
+    <h1>Users Management</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item active">Users Management</li>
+        </ol>
+    </nav>
+  </div>
+        
+  <section class="section">
+    <div class="row">
+         <div class="col-lg-12">
+             <div class="card">
+                 <div class="card-body">
+                     <h1 class="card-title">Users table</h1>
+           <div class="row mb-3">
+             <div class="col-md-4 g-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+            </div>
+            <div class="col-md-3 g-3">
+                <select id="statusFilter" class="form-control">
+                    <option value="">All Users</option>
+                    <option value="True">active</option>
+                    <option value="False">not active</option>
+                </select>
+            </div>
+            <div class="col-md-3 text-end g-3">
+              <a href="{% url 'user-create' %}"><button class="btn btn-primary" >
+                <i class="bi bi-plus-circle"></i> Add User
+              </button></a>
+            </div>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      <div class="table-responsive" >
+
+          <table class="table table-striped" id="inventoryTable">
+            <thead>
+              <tr>
+                <th>username</th>
+                <th>email</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>role</th>
+                <th>is_online</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.role }}</td>
+               
+                    <td>
+                      {% if user.is_online %}
+                        <span class="badge bg-success">Online</span>
+                      {% else %}
+                        <span class="badge bg-secondary">Offline</span>
+                      {% endif %}
+                    </td>
+                    
+                <td>
+
+                  <a href="{% url 'user-info' user.id %}" class="btn btn-sm btn-outline-secondary" title="View">
+                    <i class="bi bi-info-circle"></i>
+                  </a>
+                  <a href="{% url 'user-update' user.id %}"> <button class="btn btn-sm btn-sm me-1 btn-outline-primary" onclick="editItem('12345')">
+                    <i class="bi bi-pencil"></i> 
+                  </button> </a>
+                  <form method="POST" action="{% url 'user-delete' user.id %}" style="display: inline;"> {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete {{user.username}}? ')">
+                      <i class="bi bi-trash"></i> 
+                    </button>
+                  </form>
+              </td>
+              </tr>
+              {% endfor %}
+              
+            </tbody>
+          </table>
+      </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const table = document.querySelector('#inventoryTable tbody');
+        const rows = table.getElementsByTagName('tr');
+      
+        // وظيفة البحث
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          const selectedStatus = statusFilter.value;
+          
+          Array.from(rows).forEach(row => {
+            const name = row.cells[0].textContent.toLowerCase();
+            const status = row.cells[5].textContent.trim();
+            
+            const nameMatch = name.includes(searchTerm);
+            const statusMatch = !selectedStatus || status === selectedStatus;
+            
+            row.style.display = (nameMatch && statusMatch) ? '' : 'none';
+          });
+        });
+      
+        // وظيفة التصفية حسب الحالة
+        statusFilter.addEventListener('change', function() {
+          const searchTerm = searchInput.value.toLowerCase();
+          const selectedStatus = this.value;
+          
+          Array.from(rows).forEach(row => {
+            const name = row.cells[0].textContent.toLowerCase();
+            const status = row.cells[5].textContent.trim();
+            
+            const nameMatch = name.includes(searchTerm);
+            const statusMatch = !selectedStatus || status === selectedStatus;
+            
+            row.style.display = (nameMatch && statusMatch) ? '' : 'none';
+          });
+        });
+      });
+      </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    {% endblock %}
+
+  </body>
+  </html>
+  
+  

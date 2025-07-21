@@ -1,0 +1,576 @@
+{% extends 'NiceAdmin/index.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+
+<div class="container">
+    {% if request.user.role == 'maintenance_technician' %}
+    <div class="pagetitle">
+        <h1 >Work Order: {{ work_order.work_order_id }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'technician-dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Work Order Details</li>
+            </ol>
+        </nav>
+    </div>
+    {% endif %}
+    {% if request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' %}
+
+<div class="pagetitle">
+    <h1 >Work Order: {{ work_order.work_order_id }}</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'work-order-list' %}">Work Orders</a></li>
+            <li class="breadcrumb-item active">Work Order Details</li>
+        </ol>
+    </nav>
+</div>
+{% endif %}
+<div class="card">
+    <div class="card-body">
+        
+        
+        <div class="mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <br>
+                    <p><strong>Title:</strong> {{ work_order.title }}</p>
+                    <p><strong>Description:</strong> {{ work_order.description }}</p>
+                    <p><strong>Machine:</strong> {{ work_order.machine }}</p>
+                    <p><strong>Machine Parts:</strong></p>
+                    <ul>
+                        {% for part in work_order.machine.child_machines.all %}
+                            <li>{{ part.name }} ({{ part.serial_number }})</li>
+                        {% empty %}
+                            <li>No parts available</li>
+                        {% endfor %}
+                    </ul>
+                    
+                </div>
+                <div class="col-md-6">
+                    <br>
+                    <p><strong>Location:</strong> {{ work_order.location }}</p>
+                    <p><strong>Status:</strong> 
+                        <span class="badge {% if work_order.status == 'completed' %}bg-success{% elif work_order.status == 'in_progress' %}bg-primary{% elif work_order.status == 'open' %}bg-warning{% elif work_order.status == 'closed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                            {{ work_order.get_status_display }}
+                        </span>
+                    </p>
+                    <p><strong>Priority:</strong> 
+                        <span class="badge bg-{% if work_order.priority == 'high' %}danger{% elif work_order.priority == 'medium' %}info{% elif work_order.priority == 'low' %}success{% else %}dark{% endif %}">
+                            {{ work_order.get_priority_display }}
+                        </span>
+                    </p>
+                    <p><strong>Created:</strong> {{ work_order.created_date }}</p>
+                    <p><strong>Due Date:</strong> {{ work_order.due_date }}</p>
+                    <p><strong> Supervising Technician:</strong> {{ work_order.technician.user.get_full_name|default:"Not assigned" }}</p>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                {% if request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' %}
+                {% if  work_order.status != 'closed' %}
+
+                <a href="{% url 'work-order-edit' work_order.work_order_id %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+ 
+                <a href="{% url 'close-work-order' work_order.work_order_id %}" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to close this work order?')">
+                    <i class="bi bi-x"></i> Close
+                </a> 
+                {% endif %}{% endif %}
+                <!-- في work_o_details.html -->
+                {% if work_order.status == 'closed' and work_order.closing_report %}
+                <div class="mt-3">
+                    <a href="{% url 'work-order-report' work_order.pk %}" 
+                    class="btn btn-outline-primary">
+                        <i class="bi bi-file-text"></i> View Closing Report
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+          </div>
+        {% endfor %}
+      {% endif %} 
+        <hr>
+        
+        <h5 class="card-title">Maintenance Tasks</h5>
+
+        <div class="mb-4">        
+                                {% if request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' %}
+                                {% if  work_order.status != 'closed' %}
+
+            <button class="btn btn-sm btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                <i class="bi bi-plus"></i> Add Task
+            </button>                                               
+                                {% endif %}
+                                {% endif %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Technician</th>
+                            <th>Scheduled</th>
+                            <th>Completed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in work_order.tasks.all %}
+                        <tr>
+                            <td>{{ task.task_id }}</td>
+                            <td>{{ task.title }}</td>
+                            <td>
+                                <span class="badge {% if task.status == 'completed' %}bg-success{% elif task.status == 'in_progress' %}bg-primary{% elif task.status == 'pending' %}bg-warning{% elif task.status == 'failed' %}bg-secondary{% endif %}">
+                                    {{ task.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ task.technician|default:"Not assigned" }}</td>
+                            <td>{{ task.scheduled_date|default:"-" }}</td>
+                            <td>{{ task.completed_date|default:"-" }}</td>
+
+                            
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" 
+                                            data-bs-target="#taskDetailModal{{ task.task_id }}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    {% if work_order.status != 'closed' %}
+                                    <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" title="Instructions" 
+                                                data-bs-target="#addInstructionsModal{{ task.task_id }}">
+                                            <i class="bi bi-journal-text"></i> 
+                                        </button>
+                                        {% if request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' or task.technician.user.username == request.user.username %}
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                                                id="taskActions{{ task.task_id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-gear"></i>
+                                        </button>
+                                        
+                                        <ul class="dropdown-menu" aria-labelledby="taskActions{{ task.task_id }}">
+                                            <li>
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" 
+                                                   data-bs-target="#updateStatusModal{{ task.task_id }}">
+                                                    Update Status
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" 
+                                                   data-bs-target="#addInventoryModal{{ task.task_id }}">
+                                                    Add Inventory
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div> {% else %} <td></td> {% endif %} 
+                                       {% if request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' %}
+
+                                    <form method="post" action="{% url 'delete-task' task_id=task.task_id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                onclick="return confirm('Are you sure you want to delete this task?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>{% endif %}{% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No tasks found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+<!-- Add Task Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTaskModalLabel">Add New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ task_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Task Detail Modals -->
+{% for task in work_order.tasks.all %}
+<div class="modal fade" id="taskDetailModal{{ task.task_id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Task Details: {{ task.task_id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Title:</strong> {{ task.title }}</p>
+                        <p><strong>Machhine Part:</strong> {{ task.machine_part|default:"Not selected" }}</p>
+                        <p><strong>Status:</strong> {{ task.get_status_display }}</p>
+                        <p><strong>Technician:</strong> {{ task.technician|default:"Not assigned" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Scheduled Date:</strong> {{ task.scheduled_date|default:"Not scheduled" }}</p>
+                        <p><strong>Completed Date:</strong> {{ task.completed_date|default:"Not completed" }}</p>
+                        <p><strong>Created:</strong> {{ task.created_at }}</p>
+                        <p><strong>Last Updated:</strong> {{ task.updated_at }}</p>
+
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6>Instructions:</h6>
+                <p>{{ task.instructions|default:"No instructions provided" }}</p>
+                
+
+                
+                <h6 class="mt-3">Inventory Usage:</h6>
+            {% if task.taskinventoryusage_set.exists %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Reserved</th>
+                            <th>Used</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usage in task.taskinventoryusage_set.all %}
+                        <tr class="{% if usage.quantity_used < usage.quantity_reserved %}table-warning{% endif %}">
+                            <td>{{ usage.item.name }}</td>
+                            <td>{{ usage.quantity_reserved }}</td>
+                            <td>{{ usage.quantity_used }}</td>
+                            <td>
+                                {% if usage.quantity_used == 0 %}
+                                    <span class="badge bg-secondary">Returned</span>
+                                {% elif usage.quantity_used == usage.quantity_reserved %}
+                                    <span class="badge bg-success">Fully Used</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Partially Used</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No inventory items recorded</p>
+            {% endif %}
+                {% if task.failure_reason %}
+                <strong><h6>Failure Reason:</h6>
+                <p>{{ task.failure_reason }}</p></strong>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal{{ task.task_id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Task Status #{{ task.task_id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form method="post" action="{% url 'update-task-status' task.task_id  %}" id="statusForm{{ task.task_id }}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ StatusUpdateForm.status.id_for_label }}" class="form-label">The New Status</label>
+                        {{ StatusUpdateForm.status }}
+                        
+                    </div>
+
+                    <div class="mb-3" id="failureReasonField{{ task.task_id }}" style="display: none;">
+                        
+                        <label class="form-label">Failure Reason</label>
+                        
+                          {{ StatusUpdateForm.failure_reason }}
+                        
+                    </div>
+
+                        {% if StatusUpdateForm.status.errors %}
+                            <div class="text-danger">{{ StatusUpdateForm.status.errors }}</div>
+                        {% endif %}
+                    
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn{{ task.task_id }}">Save Changes</button>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Inventory Modal -->
+<div class="modal fade" id="addInventoryModal{{ task.task_id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Inventory to Task #{{ task.task_id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'add-inventory-to-task' task_id=task.task_id %}" id='InventoryUsageForm{{ task.task_id}}'>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Item</label>
+                        <select name="item" class="form-select" id="item" onchange="updateMaxQuantity(this)">
+                            {% for item in inventory_form.item.field.queryset %}
+                            <option value="{{ item.itemId }}" data-quantity="{{ item.quantity }}">
+                                {{ item.name }} (Available: {{ item.quantity }})
+                            </option>
+                            {% empty %}
+                            <option value="">No items available</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantity Reserved</label>
+                        <input type="number" name="quantity_reserved" class="form-control" required
+                               min="1" id="quantity_reserved" oninput="updateMaxUsed()">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Quantity Used</label>
+                        <input type="number" name="quantity_used" class="form-control" 
+                               value="0" min="0" id="quantity_used" oninput="validateUsedQuantity()">
+                        <small class="text-danger" id="quantity_error" style="display:none">
+                            quantity used cannot be greater than quantity reserved
+                        </small>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Inventory</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endfor %}
+
+
+{% for task in work_order.tasks.all %}
+<div class="modal fade" id="addInstructionsModal{{ task.task_id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Instructions for Task #{{ task.task_id }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="post" action="{% url 'add-task-instructions' task_id=task.task_id %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Instructions</label>
+              <textarea name="instructions" class="form-control" rows="5">{{ task.instructions|default:'' }}</textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Instructions</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // لكل نموذج تحديث حالة
+        document.querySelectorAll('[id^="statusForm"]').forEach(form => {
+            const taskId = form.id.replace('statusForm', '');
+            const statusSelect = form.querySelector('select[name="status"]');
+            const failureReasonField = document.getElementById(`failureReasonField${taskId}`);
+            const failureReasonInput = form.querySelector('textarea[name="failure_reason"]');
+    
+            if (statusSelect && failureReasonField) {
+                // تغيير الحالة عند تغيير الاختيار
+                statusSelect.addEventListener('change', function() {
+                    if (this.value === 'failed') {
+                        failureReasonField.style.display = 'block';
+                        if (failureReasonInput) {
+                            failureReasonInput.required = true;
+                        }
+                    } else {
+                        failureReasonField.style.display = 'none';
+                        if (failureReasonInput) {
+                            failureReasonInput.required = false;
+                        }
+                    }
+                });
+                
+                // تحقق من القيمة الأولية
+                if (statusSelect.value === 'failed') {
+                    failureReasonField.style.display = 'block';
+                    if (failureReasonInput) {
+                        failureReasonInput.required = true;
+                    }
+                }
+            }
+        });
+    
+        // التحقق من النموذج قبل الإرسال
+        function validateForm() {
+            const form = event.target;
+            const status = form.querySelector('select[name="status"]').value;
+            const failureReason = form.querySelector('textarea[name="failure_reason"]')?.value.trim();
+    
+            if (status === 'failed' && (!failureReason || failureReason === '')) {
+                alert('Please provide a failure reason');
+                return false;
+            }
+            return true;
+        }
+    });
+    </script>
+
+
+<script>
+    // هذه الدالة ستجبر المستخدم على إدخال سبب الفشل
+    function validateForm() {
+        const form = event.target;
+        const status = form.querySelector('select[name="status"]').value;
+        const failureReason = form.querySelector('textarea[name="failure_reason"]')?.value.trim();
+    
+        if (status === 'failed' && (!failureReason || failureReason === '')) {
+            alert('Please provide a failure reason when status is failed');
+            form.querySelector('textarea[name="failure_reason"]').focus();
+            return false;
+        }
+        return true;
+    }
+    
+    // هذه الدالة تتحكم في إظهار/إخفاء حقل سبب الفشل
+    function toggleFailureReasonField(selectElement) {
+        const form = selectElement.closest('form');
+        const taskId = form.id.replace('statusForm', '');
+        const failureReasonField = document.getElementById(`failureReasonField${taskId}`);
+        const failureReasonInput = form.querySelector('textarea[name="failure_reason"]');
+    
+        if (selectElement.value === 'failed') {
+            failureReasonField.style.display = 'block';
+            if (failureReasonInput) {
+                failureReasonInput.required = true;
+            }
+        } else {
+            failureReasonField.style.display = 'none';
+            if (failureReasonInput) {
+                failureReasonInput.required = false;
+            }
+        }
+    }
+    </script>
+
+<script>
+    // تحديث خيارات أجزاء الماكينة عند تغيير الماكينة في أمر العمل
+    document.addEventListener('DOMContentLoaded', function() {
+        const machineSelect = document.querySelector('#id_machine');
+        const machinePartSelect = document.querySelector('#id_machine_part');
+        
+        if (machineSelect && machinePartSelect) {
+            machineSelect.addEventListener('change', function() {
+                const machineId = this.value;
+                if (machineId) {
+                    // جلب أجزاء الماكينة عبر AJAX
+                    fetch(`/api/machine-parts/?machine_id=${machineId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            machinePartSelect.innerHTML = '';
+                            data.forEach(part => {
+                                const option = document.createElement('option');
+                                option.value = part.id;
+                                option.textContent = part.name;
+                                machinePartSelect.appendChild(option);
+                            });
+                        });
+                } else {
+                    machinePartSelect.innerHTML = '<option value="">---------</option>';
+                }
+            });
+        }
+    });
+    </script>
+
+<script>
+    function updateMaxUsed() {
+        var reserved = parseInt(document.getElementById('quantity_reserved').value) || 0;
+        var usedInput = document.getElementById('quantity_used');
+        usedInput.max = reserved;
+        if (parseInt(usedInput.value) > reserved) {
+            usedInput.value = reserved;
+        }
+        validateUsedQuantity();
+    }
+    function validateUsedQuantity() {
+        var reserved = parseInt(document.getElementById('quantity_reserved').value) || 0;
+        var used = parseInt(document.getElementById('quantity_used').value) || 0;
+        var error = document.getElementById('quantity_error');
+        if (used > reserved) {
+            error.style.display = 'block';
+        } else {
+            error.style.display = 'none';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        updateMaxUsed();
+    });
+    </script>
+
+    {% endblock %}

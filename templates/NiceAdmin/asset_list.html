@@ -1,0 +1,283 @@
+{% extends 'NiceAdmin/index.html' %}
+
+{% load mptt_tags %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+
+        <style>
+            .tree-item {
+                display: flex;
+                align-items: center;
+            }
+            .toggle-icon {
+                cursor: pointer;
+                margin-right: 5px;
+                font-weight: bold;
+                width: 15px;
+                display: inline-block;
+                text-align: center;
+            }
+            .toggle-spacer {
+                width: 15px;
+                display: inline-block;
+            }
+            .parent-node {
+                font-weight: bold;
+            }
+            .tree-table tr.level-0 td {
+            background-color: #f8f8f8 !important;
+            }
+            .tree-table tr.level-1 td {
+                background-color: #e8e8e8 !important;
+            }
+            .tree-table tr.level-2 td {
+                background-color: #d8d8d8 !important;
+            }
+            .tree-table tr.level-3 td{ 
+                background-color: #c8c8c8 !important;
+            }
+            .tree-table tr.level-4 td{ 
+                background-color: #b8b8b8 !important;
+            }
+            .tree-table tr.level-5 td{ 
+                background-color: #a8a8a8 !important;
+            }
+            .tree-table tr.level-6 td{ 
+                background-color: #e8e8e8 !important;
+            }
+            .tree-table tr.level-7 td{ 
+                background-color: #d8d8d8 !important;
+            }
+            .tree-table tr.level-8 td{ 
+                background-color: #c8c8c8 !important;
+            }
+            .tree-table tr.level-9 td{ 
+                background-color: #b8b8b8 !important;
+            }
+            .tree-table tr.level-10 td{ 
+                background-color: #a8a8a8 !important;
+            }
+            .tree-table tr.level-11 td{ 
+                background-color: #989898 !important;
+            }
+            .tree-table tr.level-12 td{ 
+                background-color: #888888 !important;
+            }
+            .tree-table tr.level-13 td{ 
+                background-color: #787878 !important;
+            }
+            .child-nodes {
+                background-color: inherit !important;
+            }
+            .level-0 { margin-left: 0px; }
+            .level-1 { margin-left: 20px; }
+            .level-2 { margin-left: 40px; }
+        </style>  
+        <div class="container">
+<div class="pagetitle">
+    <h1>Asset Management</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item active">Asset list</li>
+        </ol>
+    </nav>
+</div>
+
+ <section class="section">
+   <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+    
+        <h5 class="card-title">Asset List</h5>
+        <br>
+        <div class="row mb-3">
+            <div class="col-md-4 g-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+            </div>
+            <div class="col-md-8 text-end g-3">
+        <a href="{% url 'add_asset' %}"><button class="btn btn-primary" >
+                <i class="bi bi-plus-circle"></i> Add New Asset </button>
+        </a>
+    </div>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+            </div>
+        {% endfor %}
+    {% endif %} 
+    <div class="table-responsive">
+        <table class="table tree-table" id="assetTable">
+                    <thead> 
+                        <tr>
+                            <th>Name</th>
+                            <th>Actions </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% recursetree assets %}
+                        <tr data-node-id="{{ node.assetid }}" data-parent-id="{{ node.parent_id|default:'' }}" class="level-{{ node.level|default:0 }} {% if not node.is_leaf_node %}parent-node{% endif %}">
+                            <td>
+                                <div class="tree-item" style="padding-left: {% widthratio node.level 1 20 %}px; ">
+                                    {% if not node.is_leaf_node %}
+                                    <span class="toggle-icon">+</span>
+                                    {% else %}
+                                    <span class="toggle-spacer">&nbsp;</span>
+                                    {% endif %}
+                                    {{ node.name }}
+                                </div>
+                            </td>
+                        <!-- </td><span class="badge bg-secondary">Level {{ node.level }}</span>-->
+                            <td>
+
+                                
+                                <form method="POST"  style="display: inline;">
+                                    <a href="{% url 'info_asset' node.assetid %}" class="btn btn-sm btn-outline-secondary" title="info">
+                                    <i class="bi bi-info-circle"></i></a></form>
+                                <a href="{% url 'edit_asset' node.assetid %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i></a>
+                                <form method="POST" action="{% url 'delete_asset' node.assetid %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete {{node.name}}? ')">
+                                        <i class="bi bi-trash"></i> 
+                                    </button>
+                                </form>
+                                <a href="{% url 'add_asset_child' node.assetid %}" title="Add Part" class="btn btn-sm btn-outline-success ">
+                                    <i class="bi bi-plus-circle"></i> 
+                                </a>
+                                
+                            </td>
+                        </tr>
+                        {% if not node.is_leaf_node %}
+                            <tr class="child-nodes" data-parent-id="{{ node.assetid }}" style="padding-left: {% widthratio node.level|add:1 1 20 %}px; ">      
+                                {{ children }}
+                            </tr>
+                        {% endif %}
+                        {% endrecursetree %}
+
+                        {% if not node.is_leaf_node %}
+                            <tr>
+                                <td colspan="5" style="padding-left: 50px;">
+                                    {{ children }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+              </div>
+             </div>
+
+            </div>
+        </div>
+   </div>
+ </section>
+
+   
+    </body></div>
+</html>
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script>
+$(document).ready(function(){
+    $("#searchInput").on("keyup", function() {
+        const value = $(this).val().toLowerCase();
+        $("table tbody tr").filter(function() {
+        $(this).toggle($(this).find("td:eq(0)").text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    $("#statusFilter").change(function(){
+        const status = $(this).val();
+        if(status) {
+            $("table tbody tr").hide();
+            $(`td:contains(${status})`).parent().show();
+        } 
+        else {
+            $("table tbody tr").show();
+        }
+    });
+});
+
+function loadChildren(parentId, targetElement) {
+    $.get(`/assets/${parentId}/children/`, function(data){
+        let html = '';
+        data.forEach(child => {
+            html += `<tr>
+                <td>${child.name}</td>
+                <td>${child.status}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning">Edit</button>
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                </td>
+            </tr>`;
+        });
+        $(targetElement).html(html);
+    });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('tr[data-node-id]').forEach(row => {
+        const level = row.classList.contains('level-1') ? 1 : 
+                     row.classList.contains('level-2') ? 2 : 
+                     row.classList.contains('level-3') ? 3 : 0;
+        row.style.paddingLeft = `${level * 20}px`;
+    });  
+      
+      // إظهار جميع الصفوف في البداية
+    document.querySelectorAll('tbody tr').forEach(row => {
+        row.style.display = '';
+    });
+    
+    // إخفاء صفوف الأبناء فقط (التي لها parent-id ولا تكون فارغة)
+    document.querySelectorAll('tr[data-parent-id]:not([data-parent-id=""])').forEach(row => {
+        row.style.display = 'none';
+    });
+    
+    // إعداد نقاط التبديل
+    document.querySelectorAll('.toggle-icon').forEach(function(icon) {
+        icon.addEventListener('click', function() {
+            const parentRow = this.closest('tr');
+            const nodeId = parentRow.getAttribute('data-node-id');
+            const childRows = document.querySelectorAll(`tr[data-parent-id="${nodeId}"]`);
+            
+            if (this.textContent === '+') {
+                this.textContent = '-';
+                childRows.forEach(row => row.style.display = '');
+            } else {
+                this.textContent = '+';
+                // إخفاء جميع الأحفاد
+                hideAllDescendants(nodeId);
+                childRows.forEach(row => row.style.display = 'none');
+            }
+        });
+    });
+    
+    // دالة مساعدة لإخفاء جميع الأحفاد
+    function hideAllDescendants(parentId) {
+        const children = document.querySelectorAll(`tr[data-parent-id="${parentId}"]`);
+        children.forEach(child => {
+            const childId = child.getAttribute('data-node-id');
+            if (childId) {
+                hideAllDescendants(childId); // استدعاء تكراري لكل حفيد
+            }
+            child.style.display = 'none';
+            const childIcon = child.querySelector('.toggle-icon');
+            if (childIcon) {
+                childIcon.textContent = '+';
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

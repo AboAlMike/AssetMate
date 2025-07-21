@@ -1,0 +1,645 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.85">
+
+  <title>AssetMate</title>
+  <meta content="AssetMate, CMMS, Maintenance Management System" name="description">
+  <meta content="AssetMate, CMMS, Maintenance Management System" name="keywords">
+
+  
+
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <link href='{% static "assets/vendor/bootstrap/css/bootstrap.min.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/bootstrap-icons/bootstrap-icons.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/boxicons/css/boxicons.min.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/quill/quill.snow.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/quill/quill.bubble.css" %}' rel="stylesheet">
+  <link href='{% static "assets/vendor/remixicon/remixicon.css" %}' rel="stylesheet">
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a class="logo d-flex align-items-center">
+        <img src="{% static 'assets/img/logo.jpg' %}" alt="Logo">
+        <span class="d-none d-lg-block">AssetMate</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle " href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li>
+
+          <li class="nav-item dropdown">
+        <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          <i class="bi bi-bell"></i>
+          {% if notifications.count > 20  %}
+          <span class="badge bg-primary badge-number">20+</span>
+          {% else %}
+          <span class="badge bg-primary badge-number">{{ notifications.count }}</span>
+          {% endif %}
+
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+          <li class="dropdown-header">
+            You have {{ notifications.count }} new notification{{ notifications.count|pluralize }}
+
+            <a href="{% url 'notifications' %}"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          {% for notification in notifications|slice:":4" %}
+          <li class="notification-item">
+            {% if notification.title == 'New Item Added' %}
+              <i class="bi bi-plus-circle text-success"></i>
+            {% elif notification.title == 'New User Registration Request' %}
+              <i class="bi bi-person-circle text-warning"></i>
+            {% elif notification.title == 'New Machine Added' %}
+              <i class="bi bi-plus-circle text-success"></i>
+            {% elif notification.title == 'Machine Deleted' %}
+              <i class="bi bi-trash text-danger"></i>
+            {% elif notification.title == 'New Work Order' %}
+              <i class="bi bi-plus-circle text-success"></i>
+            {% else %}
+              <i class="bi bi-info-circle text-primary"></i>
+            {% endif %}
+
+              <div>
+                <h4>{{ notification.title }}</h4>
+                <p>{{ notification.message }}</p>
+                <p class="small text-muted">{{ notification.created_at|timesince }} ago</p>
+              </div>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+          {% empty %}
+            <li class="notification-item text-center">No notifications.</li>
+          {% endfor %}
+          <li class="dropdown-footer">
+            <a href="{% url 'notifications' %}">Show all notifications</a>
+          </li>
+        </ul>
+      </li>
+
+     <!--   <li class="nav-item dropdown">
+
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-chat-left-text"></i>
+            <span class="badge bg-success badge-number">3</span>
+          </a><ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+            <li class="dropdown-header">
+              You have 3 new messages
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Maria Hudson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>4 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>Anna Nelson</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>6 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="message-item">
+              <a href="#">
+                <img src="assets/img/messages-3.jpg" alt="" class="rounded-circle">
+                <div>
+                  <h4>David Muldon</h4>
+                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
+                  <p>8 hrs. ago</p>
+                </div>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li class="dropdown-footer">
+              <a href="#">Show all messages</a>
+            </li>
+
+          </ul></li> -->
+          <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="{{ user.image.url }}" alt="Profile Picture" width="40" class="rounded-circle" >
+            <span class="d-none d-md-block dropdown-toggle ps-2">    {{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}
+
+            </span>
+          </a><ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+              <span>{{ user.role }}</span>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'profile_page' %}">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+         
+           
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="">
+                <i class="bi bi-question-circle"></i>
+                <span>Need Help?</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+
+          </ul></li></ul>
+    </nav>
+  </header>
+    
+    <aside id="sidebar" class="sidebar">
+  <ul class="sidebar-nav" id="sidebar-nav">
+<!-- ################################  maintenance_technician  ############################################ -->
+
+{% if request.user.role == 'maintenance_technician' %}
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="{% url 'technician-dashboard' %}">
+        <i class="bi bi-house" style="font-size: 1.2rem;"></i>
+        <span>Home</span>
+      </a>
+    </li> 
+{% endif %}
+
+<!-- ################################  inventory_manager  ############################################ -->
+
+{% if request.user.role == 'inventory_manager' %}
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="{% url 'warehouse-dashboard' %}">
+        <i class="bi bi-house" style="font-size: 1.2rem;"></i>
+        <span>Home</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#inventory-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-box-seam" style="font-size: 1.2rem;"></i>
+        <span>Inventory Management</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="inventory-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          
+            <a href="{% url 'Inventory_Tracking' %}"> <i class="bi bi-list-check" style="font-size: 1.1rem;"></i>
+            <span>Inventory Tracking</span>
+          </a>
+        </li>
+        <li>
+          
+           <a href="{% url 'add_item' %}"> <i class="bi bi-plus-circle" style="font-size: 1.1rem;"></i>
+            <span>Add New Item</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+{% endif %}
+ <!-- ################################  regular_employee  ############################################ -->
+
+{% if request.user.role == 'regular_employee' %}
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="{% url 'view-failures' %}">
+        <i class="bi bi-house" style="font-size: 1.2rem;"></i>
+        <span>Home</span>
+      </a>
+    </li>
+{% endif %}
+
+
+<!-- ################################  maintenance_manager  ############################################ -->
+
+
+{% if request.user.role == 'maintenance_manager' %}
+    <li class="nav-item">
+      <a class="nav-link collapsed"  href="{% url 'maintenance-manager-dashboard' %}">
+        <i class="bi bi-house" style="font-size: 1.2rem;"></i>
+        <span>Home</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#inventory-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-box-seam" style="font-size: 1.2rem;"></i>
+        <span>Inventory Management</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="inventory-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          
+            <a href="{% url 'Inventory_Tracking' %}"> <i class="bi bi-list-check" style="font-size: 1.1rem;"></i>
+            <span>Inventory Tracking</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#assets-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-pc-display" style="font-size: 1.2rem";></i>
+        <span>Assets</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="assets-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'asset-list' %}">
+            <i class="bi bi-list-ul" style="font-size: 1.1rem";></i>
+            <span>Asset List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'add_asset' %}">
+            <i class="bi bi-plus-square" style="font-size: 1.1rem";></i>
+            <span>Add New Asset</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+      <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#machines-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-cpu" style="font-size: 1.2rem";></i>
+        <span>Machines</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="machines-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'machine_hierarchy' %}">
+            <i class="bi bi-list-ul" style="font-size: 1.1rem";></i>
+            <span>Machine List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'select_category' %}">
+            <i class="bi bi-plus-square" style="font-size: 1.1rem";></i>
+            <span>Add New Machine</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#technician-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-tools" style="font-size: 1.2rem";></i>
+        <span>Technician</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="technician-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'technician-list' %}">
+            <i class="bi bi-people" style="font-size: 1.1rem";></i>
+            <span>Technician List</span>
+          </a>
+        </li>
+
+      </ul>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#workorder-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-clipboard-check" style="font-size: 1.2rem";></i>
+        <span>Work Order</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="workorder-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'work-order-list'%}">
+            <i class="bi bi-list-task" style="font-size: 1.1rem";></i>
+            <span>Work Order List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'work_order_create'%}">
+            <i class="bi bi-file-earmark-plus" style="font-size: 1.1rem";></i>
+            <span>Create Work Order</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+   
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#machine-failure-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-exclamation-triangle " style="font-size: 1.2rem;"></i>
+        <span>Machine Failure</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="machine-failure-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'view-failures'%}">
+            <i class="bi bi-card-list" style="font-size: 1.1rem;"></i>
+            <span>Machine Failure List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'report-failure'%}">
+            <i class="bi bi-plus-circle" style="font-size: 1.1rem;"></i>
+            <span>Report Machine Failure</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+{% endif %}
+<!-- ################################ end maintenance_manager  ############################################ -->
+
+
+
+<!-- ################################  system_admin  ############################################ -->
+
+    {% if request.user.role == 'system_admin' %}
+    <li class="nav-item">
+      <a class="nav-link collapsed"  href="{% url 'system-admin-dashboard' %}">
+        <i class="bi bi-house" style="font-size: 1.2rem;"></i>
+        <span>Home</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#inventory-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-box-seam" style="font-size: 1.2rem;"></i>
+        <span>Inventory Management</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="inventory-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          
+            <a href="{% url 'Inventory_Tracking' %}"> <i class="bi bi-list-check" style="font-size: 1.1rem;"></i>
+            <span>Inventory Tracking</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'add_item' %}"> <i class="bi bi-plus-circle" style="font-size: 1.1rem;"></i>
+            <span>Add New Item</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#assets-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-pc-display" style="font-size: 1.2rem";></i>
+        <span>Assets</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="assets-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'asset-list' %}">
+            <i class="bi bi-list-ul" style="font-size: 1.1rem";></i>
+            <span>Asset List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'add_asset' %}">
+            <i class="bi bi-plus-square" style="font-size: 1.1rem";></i>
+            <span>Add New Asset</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+      <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#machines-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-cpu" style="font-size: 1.2rem";></i>
+        <span>Machines</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="machines-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'machine_hierarchy' %}">
+            <i class="bi bi-list-ul" style="font-size: 1.1rem";></i>
+            <span>Machine List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'select_category' %}">
+            <i class="bi bi-plus-square" style="font-size: 1.1rem";></i>
+            <span>Add New Machine</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#technician-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-tools" style="font-size: 1.2rem";></i>
+        <span>Technician</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="technician-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'technician-list' %}">
+            <i class="bi bi-people" style="font-size: 1.1rem";></i>
+            <span>Technician List</span>
+          </a>
+        </li>
+
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#user-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-people" style="font-size: 1.2rem";></i>
+        <span>User</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="user-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'user-list' %}">
+            <i class="bi bi-list-ul" style="font-size: 1.1rem";></i>
+            <span>User List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'user-create' %}">
+            <i class="bi bi-person-plus" style="font-size: 1.1rem";></i>
+            <span>Add New User</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'pending-accounts-list' %}">
+            <i class="bi bi-hourglass-split" style="font-size: 1.1rem;"></i>
+            <span>Pending Accounts</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#workorder-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-clipboard-check" style="font-size: 1.2rem";></i>
+        <span>Work Order</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="workorder-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'work-order-list'%}">
+            <i class="bi bi-list-task" style="font-size: 1.1rem";></i>
+            <span>Work Order List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'work_order_create'%}">
+            <i class="bi bi-file-earmark-plus" style="font-size: 1.1rem";></i>
+            <span>Create Work Order</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#machine-failure-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-exclamation-triangle " style="font-size: 1.2rem;"></i>
+        <span>Machine Failure</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="machine-failure-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="{% url 'view-failures'%}">
+            <i class="bi bi-card-list" style="font-size: 1.1rem;"></i>
+            <span>Machine Failure List</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'report-failure'%}">
+            <i class="bi bi-plus-circle" style="font-size: 1.1rem;"></i>
+            <span>Report Machine Failure</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    
+{% endif %}
+<!-- ################################ end system_admin  ############################################ -->
+
+    <li class="nav-heading">Pages</li>
+    
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="{% url 'profile_page' %}">
+        <i class="bi bi-person" style="font-size: 1.2rem";></i>
+        <span>Profile</span>
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="{% url 'contact' %}">
+        <i class="bi bi-envelope" style="font-size: 1.2rem;"></i>
+        <span>Contact</span>
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="{% url 'about' %}">
+        <i class="bi bi-info-circle" style="font-size: 1.2rem;"></i>
+        <span>About</span>
+      </a>
+    </li>
+    
+
+  </ul>
+</aside>
+
+  <main id="main" class="main">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+ 
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        "use strict";
+        const currentPath = window.location.pathname;
+        const sidebarNav = document.querySelector('#sidebar-nav');
+        if (!sidebarNav) return;
+
+        // Find all links that match the current path
+        const activeLinks = sidebarNav.querySelectorAll(`a[href='${currentPath}']`);
+
+        activeLinks.forEach(activeLink => {
+            // Check if it's a link inside a collapsible menu
+            const parentCollapse = activeLink.closest('.collapse');
+
+            if (parentCollapse) {
+                // This is a nested link
+                parentCollapse.classList.add('show');
+                const triggerLink = sidebarNav.querySelector(`[data-bs-target='#${parentCollapse.id}']`);
+                if (triggerLink) {
+                    triggerLink.classList.remove('collapsed');
+                }
+            } else {
+                // This is a top-level link (like Dashboard)
+                const isDropdownTrigger = activeLink.hasAttribute('data-bs-toggle');
+                if (!isDropdownTrigger) {
+                    activeLink.classList.remove('collapsed');
+                }
+            }
+        });
+    });
+  </script>
+
+  <script src='{% static "assets/vendor/apexcharts/apexcharts.min.js" %}'></script>
+  <script src='{% static "assets/vendor/bootstrap/js/bootstrap.bundle.min.js" %}'></script>
+  <script src='{% static "assets/vendor/chart.js/chart.umd.js" %}'></script>
+  <script src='{% static "assets/vendor/echarts/echarts.min.js" %}'></script>
+  <script src='{% static "assets/vendor/quill/quill.js" %}'></script>
+  <script src='{% static "assets/vendor/tinymce/tinymce.min.js" %}'></script>
+  <script src='{% static "assets/vendor/php-email-form/validate.js" %}'></script>
+
+  <script src='{% static "assets/js/main.js" %}'></script>
+
+  {% block scripts %}
+  {% endblock %}
+
+</body>
+
+</html>

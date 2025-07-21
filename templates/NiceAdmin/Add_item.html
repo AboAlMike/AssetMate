@@ -1,0 +1,94 @@
+{% extends 'NiceAdmin/index.html' %}
+{% block content %}
+<div class="container">
+<div class="pagetitle">
+            <h1>Add New Item</h1>
+ 
+        <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'Inventory_Tracking' %}">Inventory Tracking</a></li>
+            <li class="breadcrumb-item active">Add New Item</li>
+        </ol>
+    </nav> 
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-info-circle"> </i>Item Informations
+                    </h5>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+
+                    <form method="post" action="{% url 'add_item' %}" class="row g-3">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        
+                                <div class="col-md-6">
+                                    <label class="form-label">Item Name</label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label">Serial Number</label>
+                                    <input type="text" class="form-control" name="serial_number" required>
+                                    
+                                    
+                                </div>
+                            
+                              <div class="col-12 mb-3">
+                                    <label class="form-label">Description*</label>
+                                    <textarea class="form-control" name="description" rows="3">{{ form.description.value|default_if_none:'' }}</textarea>
+                                </div>
+                            
+                        
+
+                   
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" name="quantity" min="0" required>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" class="form-control" name="location" required>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Minimum Stock Level</label>
+                                    <input type="number" class="form-control" name="minimumStockLevel" min="0" required>
+                                    <small class="text-warning">System will alert when stock falls below this level</small>
+                                </div>
+                           
+
+                        <!-- Action Buttons -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                Add New Item
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                Reset
+                            </button>
+                            <a href="{% url 'Inventory_Tracking' %}" class="btn btn-outline-danger">
+                                Cancel
+                            </a>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>{% endblock %}

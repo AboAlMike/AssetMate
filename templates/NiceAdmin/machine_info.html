@@ -1,0 +1,112 @@
+{% extends 'NiceAdmin/index.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+<body>
+  <div class="pagetitle">
+
+      
+      <h1>Machine : "{{ machine.name }}"</h1>
+       <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'machine_hierarchy' %}">Machines Management</a></li>  
+                <li class="breadcrumb-item active">info Machine</li>
+            </ol>
+        </nav>
+
+  </div>
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-pencil-square"> </i> Machine Details
+            </h5>
+
+           {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+              </div>
+            {% endfor %}    
+          {% endif %} 
+
+            
+          <div class="mb-3 text-center">
+            {% if machine.image %}
+              <img src="{{ machine.image.url }}" alt="Machine Image" class="img-fluid rounded" style="max-height: 250px;">
+              
+            {% else %}
+              <img src="{% static 'NiceAdmin/assets/img/no-image.png' %}" alt="No Image" class="img-fluid rounded" style="max-height: 250px;">
+            {% endif %}
+          </div>
+         
+              <div class="mb-4">
+                
+                
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    
+                    <label class="form-label">Machine Name</label>
+                    <div type="text" class="form-control bg-light">{{ machine.name }} </div>   
+                  </div>
+                  
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label ">Serial Number</label>
+                    <div class="form-control bg-light">
+                      {{ machine.serial_number }}
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                        <label class="form-label">Status</label>
+                        <div class="form-control bg-light">
+                          {{ machine.status }}
+                        </div>
+                      </div>
+                  
+                
+
+              <!-- Location -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Location</label>
+                  
+                    <div class="form-control bg-light">{{ machine.location }}</div>
+                  
+              </div>
+              <!-- Description -->
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Description</label>
+                <div class="form-control bg-light" style="min-height: 80px;">{{ machine.description }}</div>
+              </div>
+              </div>
+              </div>
+              <!-- Action Buttons -->
+              <div class="mt-4 text-center">
+                <a href="{% url 'edit_machine' machine.id %}" class="btn btn-primary">                          
+                    <i class="bi bi-pencil"></i> Edit        
+                </a>
+
+                            <a href="{% url 'machine_hierarchy' %}" class="btn btn-outline-danger">
+                                Cancel
+                            </a>
+                            
+                        </div>
+                    </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body></div>
+</html>
+{% endblock %}

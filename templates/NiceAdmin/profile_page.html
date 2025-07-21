@@ -1,0 +1,165 @@
+{% extends "NiceAdmin/index.html" %}
+
+{% block content %}
+<div class="pagetitle">
+    <h1>User Profile</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item active">User Profile</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-xl-4">
+        <div class="card">
+            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                
+
+                <img src="{{ user.image.url }}" alt="Profile Picture" width="120" height="120" class="rounded-circle" >
+                <h2>{{ user.username }}</h2>
+                <h3>{{ user.email }}</h3>
+                <h5>{{ user.role }}</h5>
+                <div class="social-links mt-2">
+
+                    <a href="{% url 'logout' %}" class="text-danger mb-2">Logout</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-body pt-3">
+                <ul class="nav nav-tabs nav-tabs-bordered">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#password-settings">Change Password</button>
+                    </li>
+
+                </ul>
+               
+                <div class="tab-content pt-2">
+                    <div class="tab-pane fade profile-password pt-3" id="password-settings">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="password_change" value="1">
+                            <div class="row mb-3">
+                                <label for="old_password" class="col-md-4 col-lg-3 col-form-label">Old Password</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="old_password" type="password" class="form-control" id="old_password" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="new_password1" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="new_password1" type="password" class="form-control" id="new_password1" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="new_password2" class="col-md-4 col-lg-3 col-form-label">Confirm New Password</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="new_password2" type="password" class="form-control" id="new_password2" required>
+                                </div>
+                            </div>
+                            {% if password_errors %}
+                                <div class="alert alert-danger">{{ password_errors }}</div>
+                            {% endif %}
+                            {% if password_success %}
+                                <div class="alert alert-success">{{ password_success }}</div>
+                            {% endif %}
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Change Password</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                        <h5 class="card-title">Profile Details</h5>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label ">Full Name</div>
+                            <div class="col-lg-9 col-md-8">{{ user.get_full_name }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Username</div>
+                            <div class="col-lg-9 col-md-8">{{ user.username }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Email</div>
+                            <div class="col-lg-9 col-md-8">{{ user.email }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Last Login</div>
+                            <div class="col-lg-9 col-md-8">{{ user.last_login|date:"F j, Y H:i" }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Date Joined</div>
+                            <div class="col-lg-9 col-md-8">{{ user.date_joined|date:"F j, Y" }}</div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="tab-pane fade profile-settings pt-3" id="profile-settings">
+                        <form method="post" enctype="multipart/form-data" >
+                            {% csrf_token %}
+                            <div class="row mb-3">
+                                <label for="image" class="col-md-4 col-lg-3 col-form-label">Image</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                  </div>
+                              </div>
+                            <div class="row mb-3">
+                                <label for="firstName" class="col-md-4 col-lg-3 col-form-label">First Name</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="firstName" type="text" class="form-control" id="firstName" value="{{ user.first_name }}">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="lastName" class="col-md-4 col-lg-3 col-form-label">Last Name</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="lastName" type="text" class="form-control" id="lastName" value="{{ user.last_name }}">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="email" type="email" class="form-control" id="email" value="{{ user.email }}">
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                               
+                        </form>
+                        <form method="post" style="margin-top:10px;" class="text-start">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_image" value="1">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash" ></i> Delete Profile Picture</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>{{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+</div>
+{% endblock %}

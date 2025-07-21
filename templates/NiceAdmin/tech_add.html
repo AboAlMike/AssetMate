@@ -1,0 +1,162 @@
+
+{% extends 'NiceAdmin/index.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+<div class="pagetitle">
+  <h1>Add New Technician</h1>
+  <nav>
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'technician-list' %}">Technicians Management</a></li>
+          <li class="breadcrumb-item active">Add New Technician</li>
+      </ol>
+  </nav>
+</div>
+
+ <section class="section">
+ <div class="row">
+      <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                  <h1 class="card-title">Technician info</h1>
+
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} mt-3" role="alert">
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        
+        <form id="TechnicianForms" method="POST" action="{% url 'tech-add' %}">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %} 
+          <!-- User Selection -->
+          <div class="form-group">
+            <label for="id_user">Choose User:</label>
+            {{ form.user }}
+            {% if form.user.errors %}
+              <div class="text-danger">
+                {% for error in form.user.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <br>
+          <div class="form-group">
+            <label for="id_user">Phone Number:</label>
+            {{ form.phonenumber }}
+            {% if form.phonenumber.errors %}
+              <div class="text-danger">
+                {% for error in form.phonenumber.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <br>
+          <div class="form-group">
+            <label for="id_user">Notes:</label>
+            {{ form.notes }}
+            {% if form.notes.errors %}
+              <div class="text-danger">
+                {% for error in form.notes.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <br>
+          <!-- Specialization Section -->
+          <div class="form-group">
+            <label for="id_existing_specialization">Choose existing specialization:</label>
+            {{ form.existing_specialization }}
+            {% if form.existing_specialization.errors %}
+              <div class="text-danger">
+                {% for error in form.existing_specialization.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+          <div class="or-separator text-center">- OR -</div>
+          
+          <div class="form-group">
+            <label for="id_new_specialization">Add new specialization:</label>
+            {{ form.new_specialization }}
+            {% if form.new_specialization.errors %}
+              <div class="text-danger">
+                {% for error in form.new_specialization.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <br>
+          <div class="text-center">
+          <button id="submitItem" type="submit" class="btn btn-primary">Add Technician</button>
+          <a href="{% url 'technician-list' %}" class="btn btn-outline-danger">Cancel</a>
+          
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('TechnicianForms');
+  const existingSelect = document.getElementById('id_existing_specialization');
+  const newInput = document.getElementById('id_new_specialization');
+
+  // تعطيل الإرسال إذا كان هناك أخطاء
+  form.addEventListener('submit', function(e) {
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      alert('Please correct the errors in the form');
+    }
+  });
+
+  // التحكم في تفاعل حقلي التخصص
+  existingSelect.addEventListener('change', function() {
+    if (this.value) {
+      newInput.value = '';
+      newInput.required = false;
+    }
+  });
+
+  newInput.addEventListener('input', function() {
+    if (this.value) {
+      existingSelect.value = '';
+      existingSelect.required = false;
+    }
+  });
+});
+  </script>
+  {% endblock %}
+</body>
+</html>
+
+

@@ -1,0 +1,92 @@
+{% extends 'NiceAdmin/index.html' %}
+{% block content %}
+
+<div class="container">
+<body>
+  <div class="pagetitle">
+        <h1>User Details: "{{ user.get_full_name|default:user.username }}"</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'indexPage' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'user-list' %}">Users Management</a></li>
+            <li class="breadcrumb-item active">User Info</li>
+        </ol>
+    </nav> 
+  </div>
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-info-circle"> </i> User Information
+            </h5>
+
+            <!-- Basic Information -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Full Name</label>
+                  <div class="form-control bg-light">{{ user.get_full_name|default:user.username }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Username</label>
+                  <div class="form-control bg-light">{{ user.username }}</div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Email</label>
+                  <div class="form-control bg-light">{{ user.email|default:"-" }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Role</label>
+                  <div class="form-control bg-light">{{ user.get_role_display|default:user.role }}</div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Status</label>
+                  <div class="form-control bg-light">
+                    {% if user.is_active %}
+                      <span class="badge bg-success">Active</span>
+                    {% else %}
+                      <span class="badge bg-danger">Inactive</span>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Date Joined</label>
+                  <div class="form-control bg-light">{{ user.date_joined|date:"Y-m-d H:i" }}</div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Password</label>
+                  <div class="form-control bg-light text-muted" style="user-select: none;">
+                    <span class="fst-italic">Password is encrypted and cannot be displayed.</span>
+                  </div>
+                </div>
+               
+              </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+              <a href="{% url 'user-update' user.id %}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil"></i> Edit User
+              </a>
+              <a href="{% url 'user-list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi"></i> Back
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</body></div>
+</html>{% endblock %}

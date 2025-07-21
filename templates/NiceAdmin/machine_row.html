@@ -1,0 +1,50 @@
+{% load static %}
+
+<tr data-node-id="{{ machine.id }}" data-parent-id="{{ machine.parent_machine.id|default:'' }}" class="level-{{ level }} {% if machine.child_machines.all %}parent-node{% endif %}">
+    <td>
+        <div class="tree-item" style="padding-left: {% widthratio level 1 20 %}px;">
+            
+            {% if machine.child_machines.all %}
+                <i class="toggle-icon fas fa-plus"></i>
+            {% else %}
+            <i> &nbsp; </i><span class="toggle-spacer">&nbsp;</span>
+            {% endif %}
+            
+            
+            {% if machine.image %}
+            <img src="{{ machine.image.url }}" alt="{{ machine.name }}" 
+                 class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+            {% else %}
+            <img src="{% static 'assets/img/5234413.png' %}" 
+                 class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+            {% endif %}
+
+            {{ machine.name }}
+        </div>
+    </td>
+    <td>{{ machine.asset_class }}</td>
+    <td>{{ machine.serial_number }}</td>
+    <td>{{ machine.get_status_display }}</td>
+    <td>{{ machine.location }}</td>
+
+    <td>
+        <a href="{% url 'info_machine' machine.id %}"class="btn btn-sm btn-outline-secondary" title="info">
+            <i class="bi bi-info-circle"></i></a>
+        <a href="{% url 'edit_machine' machine.id %}"class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="bi bi-pencil"></i></a>
+          
+        <form method="POST" action="{% url 'delete_Machine' machine.id %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete {{item.name}}? ')">
+                <i class="bi bi-trash"></i>
+              </button>
+        </form>
+        <a href="{% url 'add_machine_child' machine.id %}" title="Add Child" class="btn btn-sm btn-outline-success ">
+                                    <i class="bi bi-plus-circle"></i> 
+        </a>
+    </td>
+</tr>
+
+{% for child in machine.child_machines.all %}
+    {% include 'NiceAdmin/machine_row.html' with machine=child level=level|add:1 %}
+{% endfor %}

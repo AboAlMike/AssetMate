@@ -1,0 +1,46 @@
+{% extends 'NiceAdmin/index.html' %}
+{% block content %}
+<main>
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="card-title mb-4 text-center">All Notifications</h2>
+            <ul class="list-group">
+              {% for notification in notifications %}
+                <li class="list-group-item d-flex align-items-start">
+                    {% if notification.title == 'New Item Added' %}
+                        <i class="bi bi-plus-circle text-success me-3" style="font-size: 1.5rem;"></i>
+                    {% elif notification.title == 'New User Registration Request' %}
+                        <i class="bi bi-person-circle text-warning me-3" style="font-size: 1.5rem;"></i>
+                    {% elif notification.title == 'New Machine Added' %}
+                        <i class="bi bi-plus-circle text-success me-3" style="font-size: 1.5rem;"></i>
+                    {% elif notification.title == 'Machine Deleted' %}
+                        <i class="bi bi-trash text-danger me-3" style="font-size: 1.5rem;"></i>
+                    {% elif notification.title == 'New Work Order' %}
+                        <i class="bi bi-plus-circle text-success me-3" style="font-size: 1.5rem;"></i>
+                    {% elif notification.title == 'Item Deleted' %}
+                        <i class="bi bi-trash text-danger me-3" style="font-size: 1.5rem;"></i>
+
+                    {% else %}
+                        <i class="bi bi-info-circle text-primary me-3" style="font-size: 1.5rem;"></i>
+                    {% endif %}
+                  
+                  <div>
+                    <div class="fw-bold">{{ notification.title }}</div>
+                    <div>{{ notification.message }}</div>
+                    <div class="small text-muted">{{ notification.created_at|timesince }} ago</div>
+                  </div>
+                </li>
+              {% empty %}
+                <li class="list-group-item text-center">No notifications.</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
