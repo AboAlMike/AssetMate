@@ -29,8 +29,6 @@ SECRET_KEY = 'django-insecure-1zdzm8fs&2fr-(-ky5%qk2w6bc$&%%z3lwc!x%^^z5fukq7*v&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -145,7 +143,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-ALLOWED_HOSTS = ['AssetMate.pythonanywhere.com']
+ALLOWED_HOSTS = [
+                'AssetMate.pythonanywhere.com',
+                'localhost',    
+                '127.0.0.1'
+                ]
 
 
 
