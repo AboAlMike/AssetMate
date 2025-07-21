@@ -24,7 +24,7 @@
                         <div class="row mb-3">
                             <div class="col-md-3">
                                 <form method="get" class="row g-3">
-                                    <div class="col-12">
+                                    <div class="col-12 g-3">
                                         <label class="form-label">Filter by Status</label>
                                         <select name="status" class="form-select" onchange="this.form.submit()">
                                             <option value="">All Statuses</option>
@@ -38,7 +38,7 @@
                             </div>
                             <div class="col-md-3">
                                 <form method="get" class="row g-3">
-                                    <div class="col-12">
+                                    <div class="col-12 g-3">
                                         <label class="form-label">Filter by Priority</label>
                                         <select name="priority" class="form-select" onchange="this.form.submit()">
                                             <option value="">All Priorities</option>
@@ -49,7 +49,7 @@
                                     </div>
                                 </form>
                             </div>
-                            <div class="col-md-6 text-end">
+                            <div class="col-md-6 text-end g-3">
                                 <a href="{% url 'work_order_create' %}" class="btn btn-primary">
                                     <i class="bi bi-plus-circle"></i> Create New Work Order
                                 </a>
@@ -99,7 +99,7 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <span class="badge bg-{% if wo.status == 'completed' %}success{% elif wo.status == 'in_progress' %}info{% elif wo.status == 'open' %}warning{% elif wo.status == 'closed' %}danger{% else %}secondary{% endif %}">
+                                            <span class="badge bg-{% if wo.status == 'completed' %}success{% elif wo.status == 'in_progress' %}primary{% elif wo.status == 'open' %}warning{% elif wo.status == 'closed' %}danger{% else %}secondary{% endif %}">
                                                 {{ wo.get_status_display }}
                                             </span>
                                         </td>

@@ -37,7 +37,9 @@
                             <select class="form-select" id="machine" name="machine" required>
                                 <option value="">Select Machine...</option>
                                 {% for machine in machines %}
-                                <option value="{{ machine.id }}">{{ machine.name }} ({{ machine.serial_number }})</option>
+                                {% if machine.parent_machine == None %}
+                                <option value="{{ machine.id }}">{{ machine.name }} - {{ machine.asset_class.name }} - ( {{machine.serial_number}} )</option>
+                                {% endif %}
                                 {% endfor %}
                             </select>
                         </div>
@@ -73,7 +75,6 @@
                         <div class="col-md-6">
                             <label for="technician" class="form-label">Technician*</label>
                             <select class="form-select" id="technician" name="technician">
-                                <option value="">Select Technician...</option>
                                 <option value="">Select Technician...</option>
                                 {% for tech in technicians %}
                                 <option value="{{ tech.Technicianid }}">{{ tech.user.get_full_name }}</option>

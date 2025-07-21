@@ -56,8 +56,7 @@
                 
                   <div class="col-md-6 mb-3">
                     <label for="purchase_date" class="form-label">Purchase Date</label>
-            <input type="date" class="form-control" id="purchase_date" name="purchase_date" required>
-
+                    <input type="date" class="form-control" id="purchase_date" name="purchase_date" required autocomplete="date">
              
               </div>
 
@@ -69,7 +68,7 @@
                 </div>
               </div>
               <div class="col-md-12 mb-3">
-                <label class="form-label">Description*</label>
+                <label class="form-label">Description</label>*
                 <textarea class="form-control" name="description" 
                            placeholder="Enter description"></textarea>
               </div>
@@ -115,16 +114,17 @@
 
  {% endblock %}
 
- {% block script %}
+ {% block scripts %}
  <script>
-  // ضبط تاريخ اليوم بشكل افتراضي في حقل التاريخ
   document.addEventListener('DOMContentLoaded', function() {
-    var today = new Date();
-    var yyyy = today.getFullYear();
-    var mm = String(today.getMonth() + 1).padStart(2, '0');
-    var dd = String(today.getDate()).padStart(2, '0');
-    var currentDate = yyyy + '-' + mm + '-' + dd;
-    document.getElementById('purchase_date').value = currentDate;
+      var dateInput = document.getElementById('purchase_date');
+      if (dateInput && !dateInput.value) {
+          var today = new Date();
+          var month = (today.getMonth() + 1).toString().padStart(2, '0');
+          var day = today.getDate().toString().padStart(2, '0');
+          var value = today.getFullYear() + '-' + month + '-' + day;
+          dateInput.value = value;
+      }
   });
-</script>
+  </script>
 {% endblock %}

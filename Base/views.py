@@ -714,7 +714,7 @@ def edit_asset(request, asset_id):
         except Exception as e:
             messages.error(request, f' error: {str(e)}')
     
-    return render(request, 'NiceAdmin/edit_asset.html', {'asset': asset})
+    return render(request, 'NiceAdmin/Edit_asset.html', {'asset': asset})
 
 
 def info_asset(request, asset_id):
@@ -1142,13 +1142,13 @@ def create_machines(request, category_id):
             # إنشاء الأجزاء الفرعية تلقائياً
             create_child_machines(category, main_machine)
             
-            messages.success(request, 'Asset created successfully with all parts!')
+            messages.success(request, 'Machines added successfully with all parts!')
             admins = User.objects.filter(role='system_admin')
             for admin in admins:
                 Notification.objects.create(
                     user=admin,
                     title = 'New Machine Added',
-                    message = f'New machine added to inventory, check it now...'
+                    message = f'New machine added to machine table, check it now...'
 
                 )
             return redirect('machine_hierarchy')
@@ -1713,8 +1713,8 @@ def close_work_order(request, work_order_id):
                         for inventory in inventory_manager:
                             Notification.objects.create(
                             user=inventory,
-                            title = f'{item.name} Returned',
-                            message = f'{item.name} returned to inventory from task {task.task_id}, check it now...'
+                            title = f'{usage.item.name} Returned',
+                            message = f'{usage.item.name} returned to inventory from task {task.task_id}, check it now...'
                         )
                     
                     elif usage.quantity_used < usage.quantity_reserved:
@@ -1729,8 +1729,8 @@ def close_work_order(request, work_order_id):
                         for inventory in inventory_manager:
                             Notification.objects.create(
                             user=inventory,
-                            title = f'{item.name} Partially Returned',
-                            message = f'{item.name} partially returned to inventory from task {task.task_id}, check it now...'
+                            title = f'{usage.item.name} Partially Returned',
+                            message = f'{usage.item.name} partially returned to inventory from task {task.task_id}, check it now...'
                         )
                     
                     else:

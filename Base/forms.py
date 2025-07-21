@@ -375,7 +375,7 @@ class TechnicianForm(forms.ModelForm):
     
 class CategorySelectionForm(forms.Form):
     category = forms.ModelChoiceField(
-        queryset=AssetType.objects.all(),
+        queryset=AssetType.objects.filter(parent=None),
         label="Categorys",
         widget=forms.Select(attrs={
             'class': 'form-control',
@@ -399,8 +399,13 @@ class MachineCreationForm(forms.ModelForm):
         model = Machine
         fields = ['name', 'serial_number', 'purchase_date' ,'location', 'image' , 'description' ]
         widgets = {
-            'purchase_date': forms.DateInput(attrs={'type': 'date' , 'value': datetime.now().strftime('%Y-%m-%d')})
+                'purchase_date' : forms.DateInput(attrs={'autocomplete': 'date' , 'value': timezone.now().strftime('%Y-%m-%d')})
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.initial.get('purchase_date'):
+            self.initial['purchase_date'] = datetime.now().strftime('%Y-%m-%d')
 
 class MachineForm(forms.ModelForm):
     image = forms.ImageField(required=False)
@@ -418,7 +423,7 @@ class MachineForm(forms.ModelForm):
         model = Machine
         fields = ['name', 'serial_number', 'purchase_date', 'location' ,'parent_machine', 'image' , 'description']
         widgets = {
-            'purchase_date': forms.DateInput(attrs={'type': 'date' , 'value': timezone.now().strftime('%Y-%m-%d')}),
+                'purchase_date' : forms.DateInput(attrs={'autocomplete': 'date' , 'value': timezone.now().strftime('%Y-%m-%d')})
         }
 
     def __init__(self, *args, **kwargs):
@@ -439,5 +444,5 @@ class MachineFailureForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        self.fields['machine'].queryset = Machine.objects.filter(status='Operational')
+        self.fields['machine'].queryset = Machine.objects.filter(parent_machine=None)
         self.fields['priority'].initial = 'medium'

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import InventoryItem, Notification, User, AssetType, Technician, WorkOrder, MaintenanceTask, Machine, TaskInventoryUsage
+from .models import InventoryItem, MachineFailure, Notification, User, AssetType, Technician, WorkOrder, MaintenanceTask, Machine, TaskInventoryUsage
 from mptt.admin import MPTTModelAdmin , DraggableMPTTAdmin
 from django.utils.html import format_html
 
@@ -7,6 +7,7 @@ from django.utils.html import format_html
 admin.site.register(InventoryItem)
 admin.site.register(User)
 admin.site.register(Notification)
+admin.site.register(MachineFailure)
 
 
 
