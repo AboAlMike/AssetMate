@@ -15,17 +15,17 @@
             <img src="{{ machine.image.url }}" alt="{{ machine.name }}" 
                  class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
             {% else %}
-            <img src="{% static 'assets/img/5234413.png' %}" 
+            <img src="{% static 'assets/img/no-image5.png' %}" 
                  class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
             {% endif %}
 
             {{ machine.name }}
         </div>
     </td>
-    <td>{{ machine.asset_class }}</td>
-    <td>{{ machine.serial_number }}</td>
-    <td>{{ machine.get_status_display }}</td>
-    <td>{{ machine.location }}</td>
+    <td class="text-center">{{ machine.asset_class }}</td>
+    <td class="text-center">{{ machine.serial_number }}</td>
+    <td class="text-center">{{ machine.get_status_display }}</td>
+    <td class="text-center">{{ machine.location }}</td>
 
     <td>
         <a href="{% url 'info_machine' machine.id %}"class="btn btn-sm btn-outline-secondary" title="info">

@@ -63,29 +63,29 @@
             <thead>
               <tr>
                 <th>Item Name</th>
-                <th>Serial Number</th>
-                <th>Quantity</th>
-                <th>Location</th>
-                <th>Minimum Stock Level</th>
-                <th>Status</th>
+                <th class="text-center">Serial Number</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-center">Location</th>
+                <th class="text-center">Minimum Stock Level</th>
+                <th class="text-center">Status</th>
                 {% if request.user.role == 'system_admin' or request.user.role == 'inventory_manager' %}
-                <th>Actions</th>
+                <th class="text-center">Actions</th>
                 {% endif %}
               </tr>
             </thead>
             <tbody>
               {% for item in InventoryItem %} 
               <tr>
-                <td>{{item.name}}</td>
-                <td>{{item.serial_number}}</td>
-                <td>{{item.quantity}}</td>
-                <td>{{item.location}}</td>
-                <td>{{item.minimumStockLevel}}</td>
+                <td >{{item.name}}</td>
+                <td class="text-center">{{item.serial_number}}</td>
+                <td class="text-center">{{item.quantity}}</td>
+                <td class="text-center">{{item.location}}</td>
+                <td class="text-center">{{item.minimumStockLevel}}</td>
 
-                <td class="{% if item.status == 'Critical' %}text-danger{% endif %}">{{item.status}}</td> 
+                <td class="{% if item.status == 'Critical' %}text-danger{% endif %} text-center">{{item.status}}</td> 
                 {% if request.user.role == 'system_admin' or request.user.role == 'inventory_manager' %}
 
-                <td>
+                <td class="text-center">
                   <a href ="{% url 'info_item' item.itemId  %}" class="btn btn-sm btn-outline-secondary" title="View">
                                                     <i class="bi bi-info-circle"></i>
                                                 </a>

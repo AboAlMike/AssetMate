@@ -49,21 +49,21 @@
           <li class="nav-item dropdown">
         <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
           <i class="bi bi-bell"></i>
-          {% if notifications.count > 20  %}
+          {% if notificationss.count > 20  %}
           <span class="badge bg-primary badge-number">20+</span>
           {% else %}
-          <span class="badge bg-primary badge-number">{{ notifications.count }}</span>
+          <span class="badge bg-primary badge-number">{{ notificationss.count }}</span>
           {% endif %}
 
         </a>
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
           <li class="dropdown-header">
-            You have {{ notifications.count }} new notification{{ notifications.count|pluralize }}
+            You have {{ notificationss.count }} new notification{{ notificationss.count|pluralize }}
 
             <a href="{% url 'notifications' %}"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
           </li>
           <li><hr class="dropdown-divider"></li>
-          {% for notification in notifications|slice:":4" %}
+          {% for notification in notificationss|slice:":4" %}
           <li class="notification-item">
             {% if notification.title == 'New Item Added' %}
               <i class="bi bi-plus-circle text-success"></i>
@@ -333,7 +333,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#technician-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-tools" style="font-size: 1.2rem";></i>
-        <span>Technician</span>
+        <span>Technicians</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="technician-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
@@ -350,7 +350,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#workorder-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-clipboard-check" style="font-size: 1.2rem";></i>
-        <span>Work Order</span>
+        <span>Work Orders</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="workorder-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
@@ -372,7 +372,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#machine-failure-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-exclamation-triangle " style="font-size: 1.2rem;"></i>
-        <span>Machine Failure</span>
+        <span>Machine Failures</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="machine-failure-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
@@ -473,7 +473,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#technician-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-tools" style="font-size: 1.2rem";></i>
-        <span>Technician</span>
+        <span>Technicians</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="technician-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
@@ -489,7 +489,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#user-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-people" style="font-size: 1.2rem";></i>
-        <span>User</span>
+        <span>Users</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="user-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
@@ -517,7 +517,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#workorder-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-clipboard-check" style="font-size: 1.2rem";></i>
-        <span>Work Order</span>
+        <span>Work Orders</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="workorder-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
@@ -538,7 +538,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#machine-failure-nav" data-bs-toggle="collapse" href="#">
         <i class="bi bi-exclamation-triangle " style="font-size: 1.2rem;"></i>
-        <span>Machine Failure</span>
+        <span>Machine Failures</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="machine-failure-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">

@@ -58,10 +58,8 @@ def about_view_not_authenticated(request):
     return render(request, 'NiceAdmin/about_not_authenticated.html')
 
 def notifications_view(request):
-    # Mark all unread notifications as read
-    request.user.notifications.filter(is_read=False).update(is_read=True)
-    
-    # Get all notifications to display on the page
+    days_ago = timezone.now() - timedelta(days=3)
+    Notification.objects.filter(is_read=True, created_at__lt=days_ago).delete()
     notifications = request.user.notifications.order_by('-created_at')
     return render(request, 'NiceAdmin/notifications.html', {'notifications': notifications})
 
@@ -1130,7 +1128,7 @@ def select_category(request):
 
 def create_machines(request, category_id):
     category = get_object_or_404(AssetType, assetid=category_id)
-    
+
     if request.method == 'POST':
         form = MachineCreationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -1154,10 +1152,11 @@ def create_machines(request, category_id):
             return redirect('machine_hierarchy')
     else:
         form = MachineCreationForm(initial={'name': category.name})
-    
+
     return render(request, 'NiceAdmin/machin_add.html', {
         'form': form,
-        'category': category
+        'category': category,
+
     })
 
 def create_child_machines(category, parent_machine):
@@ -1234,9 +1233,15 @@ def edit_machine(request, pk):
 
 
 def info_machine(request, pk):
-    machine = get_object_or_404(Machine, pk=pk)            
+    machine = get_object_or_404(Machine, pk=pk)  
+    work_order = WorkOrder.objects.filter(machine = machine) 
+    machine_failure = MachineFailure.objects.filter(machine = machine)  
+    maintenance = MaintenanceTask.objects.filter(machine_part = machine)       
     return render(request, 'NiceAdmin/machine_info.html', {
         'machine': machine,
+        'work_order':work_order,
+        'machine_failure':machine_failure,
+        'tasks':maintenance,
         'is_parent': machine.child_machines.exists()
     })
 
@@ -1362,10 +1367,8 @@ def work_order_create(request):
             # معالجة الحقول من نوع DurationField
             estimated_hours = request.POST.get('estimated_duration')
             estimated_duration = timedelta(hours=int(estimated_hours)) if estimated_hours else None
-            
-            actual_hours = request.POST.get('actual_duration')
-            actual_duration = timedelta(hours=int(actual_hours)) if actual_hours else None
-            
+
+
             # إنشاء أمر العمل جديد
             work_order = WorkOrder(
                 title=request.POST.get('title'),
@@ -1376,7 +1379,6 @@ def work_order_create(request):
                 priority=request.POST.get('priority'),
                 status='open',
                 estimated_duration=estimated_duration,
-                actual_duration=actual_duration,
                 created_by=request.user,
                 location=request.POST.get('location'),
                 completion_notes=request.POST.get('completion_notes', '')
@@ -1407,7 +1409,7 @@ def work_order_create(request):
     # جلب البيانات اللازمة للنموذج
     machines = Machine.objects.all()
     technicians = Technician.objects.all()
-    
+
     # تعيين تاريخ الغد كتاريخ افتراضي
     default_due_date = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d')
     
@@ -1673,7 +1675,6 @@ def delete_task(request, task_id):
 
 def close_work_order(request, work_order_id):
     work_order = get_object_or_404(WorkOrder, pk=work_order_id)
-    
     if work_order.status == 'closed':
         messages.warning(request, 'Work order already closed')
         return redirect('work-order-detail', pk=work_order_id)
@@ -1683,8 +1684,15 @@ def close_work_order(request, work_order_id):
             report_data = {
                 'used_materials': [],
                 'returned_materials': [],
-                'tasks_summary': []
+                'tasks_summary': [],
+                'estimated_time': str(work_order.estimated_duration) if work_order.estimated_duration else None,
+                'actual_time': str(work_order.actual_duration) if work_order.actual_duration else None,
+                'due_date': str(work_order.due_date) if hasattr(work_order, 'due_date') else None,
+                'actual_completion_date': str(timezone.now().date()),
             }
+            if work_order.created_date:
+                delta = timezone.now() - work_order.created_date
+                report_data['actual_time'] = str(delta)
             
             for task in work_order.tasks.all():
                 task_summary = {
@@ -1745,14 +1753,12 @@ def close_work_order(request, work_order_id):
                 
                 report_data['tasks_summary'].append(task_summary)
             
-            work_order.status = 'closed'
-            work_order.save()
-            
-            Notification.objects.create(
-                user=work_order.technician.user,
-                title='Work Order Closed',
-                message=f'Work Order {work_order.work_order_id} has been closed, check it now...'
-                )
+            if work_order.technician and work_order.technician.user:
+                Notification.objects.create(
+                    user=work_order.technician.user,
+                    title='Work Order Closed',
+                    message=f'Work Order {work_order.work_order_id} has been closed, check it now...'
+                    )
 
             WorkOrderClosingReport.objects.create(
                 work_order=work_order,
@@ -1760,7 +1766,12 @@ def close_work_order(request, work_order_id):
                 report_content=report_data,
                 notes=request.POST.get('closing_notes', '')
             )
-            
+            # حفظ ملاحظات الإغلاق إذا أُرسلت
+            completion_notes = request.POST.get('completion_notes', '').strip()
+            if completion_notes:
+                work_order.completion_notes = completion_notes
+            work_order.status = 'closed'
+            work_order.save()
             messages.success(request, 'Work order closed successfully with detailed report')
             
         except Exception as e:
@@ -1875,6 +1886,7 @@ def create_work_order_from_failure(request, failure_id):
             'machine': failure.machine,
             'priority': failure.priority,
             'location': failure.machine.location if failure.machine else None,
+            'due_date': (timezone.now() + timedelta(days=7)).date(),
         }
         form = WorkOrderForm(initial=initial_data)
     

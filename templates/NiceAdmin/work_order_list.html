@@ -69,12 +69,12 @@
                                     <tr>
                                         <th scope="col">WO #</th>
                                         <th scope="col">Title</th>
-                                        <th scope="col">Machine</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Priority</th>
-                                        <th scope="col">Supervising Technician</th>
-                                        <th scope="col">Due Date</th>
-                                        <th scope="col">Actions</th>
+                                        <th scope="col" class="text-center">Machine</th>
+                                        <th scope="col" class="text-center">Status</th>
+                                        <th scope="col" class="text-center">Priority</th>
+                                        <th scope="col" class="text-center">Supervising Technician</th>
+                                        <th scope="col" class="text-center">Due Date</th>
+                                        <th scope="col" class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -91,31 +91,31 @@
                                                 </span>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             {% if wo.machine %}
                                                 {{ wo.machine.name|truncatechars:20 }}
                                             {% else %}
                                                 <span class="text-muted">Not assigned</span>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <span class="badge bg-{% if wo.status == 'completed' %}success{% elif wo.status == 'in_progress' %}primary{% elif wo.status == 'open' %}warning{% elif wo.status == 'closed' %}danger{% else %}secondary{% endif %}">
                                                 {{ wo.get_status_display }}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <span class="badge bg-{% if wo.priority == 'high' %}danger{% elif wo.priority == 'medium' %}warning{% elif wo.priority == 'low' %}success{% else %}dark{% endif %}">
                                                 {{ wo.get_priority_display }}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             {% if wo.technician %}
                                                 {{ wo.technician }}
                                             {% else %}
                                                 <span class="text-muted">Not assigned</span>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             {% if wo.due_date %}
                                                 {{ wo.due_date|date:"Y-m-d" }}
                                                 {% if wo.is_overdue %}
@@ -125,18 +125,23 @@
                                                 <span class="text-muted">Not set</span>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <div class="btn-group" role="group">
+
+                                            {% if wo.status != 'closed' %}
+
+                                            <a href="{% url 'work-order-edit' wo.work_order_id %}" 
+                                            class="btn btn-sm btn-outline-warning" title="Edit">
+                                             <i class="bi bi-pencil"></i>
+                                         </a>
+                                         {% endif %}
                                                 <a href="{% url 'work-order-detail' wo.work_order_id %}" 
                                                    class="btn btn-sm btn-outline-primary" title="View">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 {% if wo.status != 'closed' %}
 
-                                                <a href="{% url 'work-order-edit' wo.work_order_id %}" 
-                                                   class="btn btn-sm btn-outline-warning" title="Edit">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
+
                                                 <form method="post" action="{% url 'close-work-order' wo.work_order_id %}" class="d-inline">
                                                     {% csrf_token %}
                                                     <button type="submit" class="btn btn-sm btn-outline-danger" 

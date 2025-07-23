@@ -137,10 +137,10 @@
                                 <thead>
                                     <tr>
                                         <th>Report Number</th>
-                                        <th>Title</th>
-                                        <th>Machine</th>
-                                        <th>Priority</th>
-                                        <th>Registration Date</th>
+                                        <th >Title</th>
+                                        <th class="text-center">Machine</th>
+                                        <th class="text-center">Priority</th>
+                                        <th class="text-center">Registration Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -148,16 +148,16 @@
                                     {% for failure in failures %}
                                     {% if request.user == failure.reported_by or request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' %}
                                     <tr>
-                                        <td>{{ failure.id }}</td>
-                                        <td>{{ failure.title }}</td>
-                                        <td>{{ failure.machine.name|default:"-" }}</td>
-                                        <td>
+                                        <td >{{ failure.id }}</td>
+                                        <td     >{{ failure.title }}</td>
+                                        <td class="text-center">{{ failure.machine.name|default:"-" }}</td>
+                                        <td class="text-center">
                                             <span class="badge bg-{% if failure.priority == 'high' %}danger{% elif failure.priority == 'medium' %}warning{% elif failure.priority == 'low' %}success{% else %}dark{% endif %}">
                                                 {{ failure.get_priority_display }}
                                             </span>
                                         </td>
-                                        <td>{{ failure.failure_date|date:"Y-m-d H:i" }}</td>
-                                        <td>
+                                        <td class="text-center">{{ failure.failure_date|date:"Y-m-d H:i" }}</td>
+                                        <td >
                                           
                                             <a href="#" title="view" class="btn btn-sm btn-primary" data-bs-toggle="modal" 
                                             data-bs-target="#failureModal{{ failure.id }}">

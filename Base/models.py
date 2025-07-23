@@ -157,7 +157,6 @@ class Machine(models.Model):
         return f"{asset_name} - {self.name}"
     
     def get_full_hierarchy(self):
-        """الحصول على التسلسل الهرمي الكامل للآلة"""
         return {
             'machine': self,
             'children': [child.get_full_hierarchy() for child in self.child_machines.all()]
@@ -224,7 +223,7 @@ class WorkOrder(models.Model):
     estimated_duration = models.DurationField(null=True, blank=True)
     actual_duration = models.DurationField(null=True, blank=True)
     completion_notes = models.TextField(blank=True)
-
+# Order by created_date
     class Meta:
         ordering = ['-created_date']
         
@@ -305,7 +304,7 @@ class TaskInventoryUsage(models.Model):
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return f"{self.quantity_used}x {self.item.name} for {self.task.title}"
+        return f"{self.quantity_used} x {self.item.name} for {self.task.title}"
     
 
     

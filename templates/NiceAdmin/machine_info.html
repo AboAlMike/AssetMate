@@ -40,10 +40,12 @@
             
           <div class="mb-3 text-center">
             {% if machine.image %}
-              <img src="{{ machine.image.url }}" alt="Machine Image" class="img-fluid rounded" style="max-height: 250px;">
+              <img src="{{ machine.image.url }}" alt="Machine Image" class="img-fluid rounded" style="max-height: 150px;">
               
             {% else %}
-              <img src="{% static 'NiceAdmin/assets/img/no-image.png' %}" alt="No Image" class="img-fluid rounded" style="max-height: 250px;">
+            <h6>No Image Available</h6>
+
+              <img src="{% static 'assets/img/no-image5.png' %}" alt="No Image" class="img-fluid rounded" style="max-height: 120px;">
             {% endif %}
           </div>
          
@@ -51,13 +53,17 @@
                 
                 
                 <div class="row">
-                  <div class="col-md-6 mb-3">
+                  <div class="col-md-4 mb-3">
                     
                     <label class="form-label">Machine Name</label>
                     <div type="text" class="form-control bg-light">{{ machine.name }} </div>   
                   </div>
-                  
-                  <div class="col-md-6 mb-3">
+                  <div class="col-md-4 mb-3">
+                    
+                    <label class="form-label">Machine Type</label>
+                    <div type="text" class="form-control bg-light">{{ machine.asset_class.name }} </div>   
+                  </div>
+                  <div class="col-md-4 mb-3">
                     <label class="form-label ">Serial Number</label>
                     <div class="form-control bg-light">
                       {{ machine.serial_number }}
@@ -88,25 +94,247 @@
                 <div class="form-control bg-light" style="min-height: 80px;">{{ machine.description }}</div>
               </div>
               </div>
-              </div>
-              <!-- Action Buttons -->
-              <div class="mt-4 text-center">
-                <a href="{% url 'edit_machine' machine.id %}" class="btn btn-primary">                          
-                    <i class="bi bi-pencil"></i> Edit        
-                </a>
+                            <!-- Action Buttons -->
+                            <div class="mt-4 text-center">
+                              <a href="{% url 'edit_machine' machine.id %}" class="btn btn-primary">                          
+                                  <i class="bi bi-pencil"></i> Edit        
+                              </a>
+              
+                                          <a href="{% url 'machine_hierarchy' %}" class="btn btn-outline-danger">
+                                              Cancel
+                                          </a>
+                                          
+                                      </div>
+              {% if machine.parent_machine is None %}
+              <h5>work orders history</h5>
+              <div class="alert alert-info">
+                {% if work_order %}
+                  <ul class="list-group">
+                    {% for work_order in work_order %}
+                      <li class="list-group-item">
+                        <i class="bi bi-arrow-right-short"></i> <a href="{% url 'work-order-detail' work_order.work_order_id %}"> {{ work_order.work_order_id }} - {{ work_order.title }}</a> - {{work_order.created_date}}
+                        - <span class="badge {% if work_order.status == 'completed' %}bg-success
+                                             {% elif work_order.status == 'in_progress' %}bg-primary
+                                             {% elif work_order.status == 'open' %}bg-warning
+                                             {% elif work_order.status == 'closed' %}bg-danger
+                                             {% else %}bg-secondary{% endif %}">
+                          {{ work_order.get_status_display }}</span> {% if work_order.closing_report.closed_date %} - {{work_order.closing_report.closed_date}}{% endif %}
+                        <div class="form-control bg-light" style="min-height: 80px;">{{ work_order.description }}</div>
 
-                            <a href="{% url 'machine_hierarchy' %}" class="btn btn-outline-danger">
-                                Cancel
-                            </a>
-                            
-                        </div>
-                    </form>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="text-muted mb-0">No work orders defined for this machine</p>
+                {% endif %}
+              </div>
+              <h5>failure history</h5>
+              <div class="alert alert-info">
+                {% if machine_failure %}
+                  <ul class="list-group">
+                    {% for machine_failure in machine_failure %}
+                      <li class="list-group-item">
+                        <i class="bi bi-arrow-right-short"></i> <a
+                        class="btn btn-link p-0"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#failureModal{{ machine_failure.id }}"
+                        style="cursor:pointer;"> {{machine_failure.id}} - {{ machine_failure.title }}</a> - {{machine_failure.failure_date}}
+                        <div class="form-control bg-light" style="min-height: 80px;">{{ machine_failure.description }}</div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="text-muted mb-0">No failures defined for this machine</p>
+                {% endif %}
+              </div>
+              {% else %}
+              <h5>Maintenance history</h5>
+              <div class="alert alert-info">
+                {% if tasks %}
+                  <ul class="list-group">
+                    {% for task in tasks %}
+                      <li class="list-group-item">
+                        <div>  <i class="bi bi-arrow-right-short"></i><a 
+                        class="btn btn-link p-0"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#taskDetailModal{{ task.task_id }}"
+                        style="cursor:pointer;">
+                        {{ task.title }}
+                      </a> - {{task.created_at}} - 
+                      <span class="badge {% if task.status == 'completed' %}bg-success{% elif task.status == 'in_progress' %}bg-primary{% elif task.status == 'pending' %}bg-warning{% elif task.status == 'failed' %}bg-secondary{% endif %}">
+                        {{ task.get_status_display }}
+                    </span>{% if task.completed_date %} - {{task.completed_date}}{% endif %}      </div>
+                      <div class="text-end"><a href="{% url 'work-order-detail' task.work_order.work_order_id %}"> GO TO WORK ORDER</a></div>
+                         <div class="form-control bg-light" style="min-height: 80px;">{{ task.description }}</div> 
+
+                  </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="text-muted mb-0">No maintenance defined for this machine</p>
+                {% endif %}
+              </div>
+              {% endif %}
+              </div>
+
           </div>
         </div>
       </div>
     </div>
   </section>
 
+
 </body></div>
 </html>
+
+
+<!-- Task Detail Modals -->
+{% for task in tasks %}
+<div class="modal fade" id="taskDetailModal{{ task.task_id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Task Details: {{ task.task_id }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Title:</strong> {{ task.title }}</p>
+            <p><strong>Machhine Part:</strong> {{ task.machine_part|default:"Not selected" }}</p>
+            <p><strong>Status:</strong> {{ task.get_status_display }}</p>
+                        <p><strong>Technician:</strong> {{ task.technician|default:"Not assigned" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Scheduled Date:</strong> {{ task.scheduled_date|default:"Not scheduled" }}</p>
+                        <p><strong>Completed Date:</strong> {{ task.completed_date|default:"Not completed" }}</p>
+                        <p><strong>Created:</strong> {{ task.created_at }}</p>
+                        <p><strong>Last Updated:</strong> {{ task.updated_at }}</p>
+
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6>Instructions:</h6>
+                <p>{{ task.instructions|default:"No instructions provided" }}</p>
+                
+
+                
+                <h6 class="mt-3">Inventory Usage:</h6>
+            {% if task.taskinventoryusage_set.exists %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Reserved</th>
+                            <th>Used</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usage in task.taskinventoryusage_set.all %}
+                        <tr class="{% if usage.quantity_used < usage.quantity_reserved %}table-warning{% endif %}">
+                            <td>{{ usage.item.name }}</td>
+                            <td>{{ usage.quantity_reserved }}</td>
+                            <td>{{ usage.quantity_used }}</td>
+                            <td>
+                                {% if usage.quantity_used == 0 %}
+                                    <span class="badge bg-secondary">Returned</span>
+                                {% elif usage.quantity_used == usage.quantity_reserved %}
+                                    <span class="badge bg-success">Fully Used</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Partially Used</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No inventory items recorded</p>
+            {% endif %}
+                {% if task.failure_reason %}
+                <strong><h6>Failure Reason:</h6>
+                <p>{{ task.failure_reason }}</p></strong>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Failure Details Modal -->
+{% for failure in machine_failure %}
+
+<div class="modal fade" id="failureModal{{ failure.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Failure Details: #{{ failure.id }}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="row mb-3">
+                  <div class="col-md-6">
+                      <p><strong>Title:</strong> {{ failure.title }}</p>
+                      <p><strong>Machine:</strong> {{ failure.machine.name|default:"Not specified" }}</p>
+                      <p><strong>Serial Number:</strong> {{ failure.machine.serial_number|default:"-" }}</p>
+
+                  </div>
+                  <div class="col-md-6">
+                      <p><strong>Priority:</strong> 
+                          <span class="badge bg-{% if failure.priority == 'high' %}danger{% elif failure.priority == 'medium' %}warning{% elif failure.priority == 'low' %}success{% else %}dark{% endif %}">
+                              {{ failure.get_priority_display }}
+                          </span>
+                      </p>
+                   
+                      <p><strong>Reported Date:</strong> {{ failure.failure_date|date:"Y-m-d H:i" }}</p>
+                  </div>
+              </div>
+              <hr>
+              
+              <h5>Description:</h5>
+              <div class="alert alert-light">
+                  {{ failure.description|default:"No description provided" }}
+              </div>
+              
+          </div>
+          
+          <div class="modal-footer">
+              {% if not failure.work_order_created  %}
+              {% if request.user.role == 'system_admin' or request.user.role == 'maintenance_manager' %}
+  <a href="{% url 'create-work-order-from-failure' failure.id %}" 
+     class="btn btn-primary">
+      <i class="bi bi-wrench"></i> Create Work Order
+  </a>
+  {% endif %}
+  {% if request.user == failure.reported_by or request.user.role == 'system_admin' %}
+  <a href="{% url 'edit-failure' failure.id  %}" class="btn btn-primary">
+      <i class="bi bi-pencil"></i> Edit Details
+  </a>
+  {% endif %}
+{% else %}
+  <div class="alert alert-success">
+      <i class="bi bi-check-circle"></i> 
+      A work order has been created for this failure
+  </div>
+{% endif %}
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              
+          </div>
+      </div>
+  </div>
+</div>
+{% endfor %}
+
+
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

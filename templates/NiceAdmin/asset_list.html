@@ -114,14 +114,14 @@
         <table class="table tree-table" id="assetTable">
                     <thead> 
                         <tr>
-                            <th>Name</th>
-                            <th>Actions </th>
+                            <th >Name</th>
+                            <th class="text-center">Actions </th>
                         </tr>
                     </thead>
                     <tbody>
                         {% recursetree assets %}
-                        <tr data-node-id="{{ node.assetid }}" data-parent-id="{{ node.parent_id|default:'' }}" class="level-{{ node.level|default:0 }} {% if not node.is_leaf_node %}parent-node{% endif %}">
-                            <td>
+                        <tr data-node-id="{{ node.assetid }}" data-parent-id="{{ node.parent_id|default:'' }}" class="level-{{ node.level|default:0 }} {% if not node.is_leaf_node %}parent-node{% endif %} text-center">
+                            <td class="text-center">
                                 <div class="tree-item" style="padding-left: {% widthratio node.level 1 20 %}px; ">
                                     {% if not node.is_leaf_node %}
                                     <span class="toggle-icon">+</span>
@@ -132,7 +132,7 @@
                                 </div>
                             </td>
                         <!-- </td><span class="badge bg-secondary">Level {{ node.level }}</span>-->
-                            <td>
+                            <td class="text-center">
 
                                 
                                 <form method="POST"  style="display: inline;">

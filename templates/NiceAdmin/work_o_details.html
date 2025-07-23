@@ -40,7 +40,7 @@
                     <br>
                     <p><strong>Title:</strong> {{ work_order.title }}</p>
                     <p><strong>Description:</strong> {{ work_order.description }}</p>
-                    <p><strong>Machine:</strong> {{ work_order.machine }}</p>
+                    <p><strong>Machine:</strong><a href="{% url 'info_machine' work_order.machine.id %}"> {{ work_order.machine }}</a></p>
                     <p><strong>Machine Parts:</strong></p>
                     <ul>
                         {% for part in work_order.machine.child_machines.all %}
@@ -272,7 +272,7 @@
                     </thead>
                     <tbody>
                         {% for usage in task.taskinventoryusage_set.all %}
-                        <tr class="{% if usage.quantity_used < usage.quantity_reserved %}table-warning{% endif %}">
+                        <tr class=" {% if usage.quantity_used == 0 %}table-secondary {% elif usage.quantity_used < usage.quantity_reserved %}table-warning{% elif usage.quantity_used == usage.quantity_reserved %}table-success{% endif %}">
                             <td>{{ usage.item.name }}</td>
                             <td>{{ usage.quantity_reserved }}</td>
                             <td>{{ usage.quantity_used }}</td>

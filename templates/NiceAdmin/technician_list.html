@@ -49,22 +49,22 @@
             <thead>
               <tr>
                 <th>User</th>
-                <th>Name</th>
-                <th>Specialization</th>
-                <th>Phone Number</th>
-                <th>Email</th>
-                <th>Actions</th>
+                <th class="text-center">Name</th>
+                <th class="text-center">Specialization</th>
+                <th class="text-center">Phone Number</th>
+                <th class="text-center">Email</th>
+                <th class="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {% for tech in technicians %} <tr>
                 <td> {{ tech.user.username}} </td>
-                <td>{{ tech.user.get_full_name }}</td>
-                <td>{{ tech.specialization }}</td>
-                <td>{{ tech.phonenumber }}</td>
-                <td>{{ tech.user.email }}</td>                
+                <td class="text-center">{{ tech.user.get_full_name }}</td>
+                <td class="text-center">{{ tech.specialization }}</td>
+                <td class="text-center">{{ tech.phonenumber }}</td>
+                <td class="text-center">{{ tech.user.email }}</td>                
                 
-                <td>
+                <td class="text-center">
                   <a href="{% url 'tech_info' tech.Technicianid %}" class="btn btn-sm btn-outline-secondary" title="View">
                     <i class="bi bi-info-circle"></i>
                 </a>

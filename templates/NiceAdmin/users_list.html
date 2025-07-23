@@ -51,24 +51,24 @@
             <thead>
               <tr>
                 <th>username</th>
-                <th>email</th>
-                <th>First name</th>
-                <th>Last name</th>
-                <th>role</th>
-                <th>is_online</th>
-                <th>Actions</th>
+                <th class="text-center">email</th>
+                <th class="text-center">First name</th>
+                <th class="text-center">Last name</th>
+                <th class="text-center">role</th>
+                <th class="text-center">is_online</th>
+                <th class="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.first_name }}</td>
-                    <td>{{ user.last_name }}</td>
-                    <td>{{ user.role }}</td>
+                    <td >{{ user.username }}</td>
+                    <td class="text-center">{{ user.email }}</td>
+                    <td class="text-center">{{ user.first_name }}</td>
+                    <td class="text-center">{{ user.last_name }}</td>
+                    <td class="text-center">{{ user.role }}</td>
                
-                    <td>
+                    <td class="text-center">
                       {% if user.is_online %}
                         <span class="badge bg-success">Online</span>
                       {% else %}
@@ -76,7 +76,7 @@
                       {% endif %}
                     </td>
                     
-                <td>
+                <td class="text-center">
 
                   <a href="{% url 'user-info' user.id %}" class="btn btn-sm btn-outline-secondary" title="View">
                     <i class="bi bi-info-circle"></i>
