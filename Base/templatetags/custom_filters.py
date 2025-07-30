@@ -3,6 +3,8 @@ from django import template
 register = template.Library()
 
 @register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key, 0)
 
 def filter_by_status(items, status):
     return [item for item in items if item.status == status]    

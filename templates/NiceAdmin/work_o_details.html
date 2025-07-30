@@ -40,7 +40,12 @@
                     <br>
                     <p><strong>Title:</strong> {{ work_order.title }}</p>
                     <p><strong>Description:</strong> {{ work_order.description }}</p>
-                    <p><strong>Machine:</strong><a href="{% url 'info_machine' work_order.machine.id %}"> {{ work_order.machine }}</a></p>
+                    <p><strong>Machine:</strong>
+                        {% if work_order.machine %}
+                        <a href="{% url 'info_machine' work_order.machine.id %}"> {{ work_order.machine }}</a>
+                        {% else %}
+                        <span class="text-danger">Deleted Machine</span>
+                        {% endif %}</p>
                     <p><strong>Machine Parts:</strong></p>
                     <ul>
                         {% for part in work_order.machine.child_machines.all %}

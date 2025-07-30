@@ -695,8 +695,17 @@ def add_item(request):
 # ****************************************** Asset Management views *****************************************************************************************************
 
 def Asset_Management(request):
-    assets = AssetType.objects.all() 
-    return render(request, 'NiceAdmin/asset_list.html', {'assets': assets})
+    assets = AssetType.objects.all()
+    # Get count of machines for each asset type
+    asset_counts = {}
+    for asset in assets:
+        count = Machine.objects.filter(asset_class=asset).count()
+        asset_counts[asset.assetid] = count
+    
+    return render(request, 'NiceAdmin/asset_list.html', {
+        'assets': assets,
+        'asset_counts': asset_counts
+    })
 
 
 def edit_asset(request, asset_id):
@@ -771,8 +780,14 @@ def get_asset_children(request, pk):
 
 
 def asset_list(request):
+    count = 0
+    machines = Machine.objects.all()
     assets = AssetType.objects.all()
-    return render(request, 'asset_list.html', {'assets': assets})
+    for asset in assets:
+        for machine in machines:
+            if asset.name == machine.asset_class.name:
+                count = machine.objects.count  
+    return render(request, 'asset_list.html', {'assets': assets , 'count': count })
 
 
 # ****************************************** Users Management views *****************************************************************************************************
@@ -1360,16 +1375,12 @@ def add_task_to_work_order(request, pk):
 def work_order_create(request):
     if request.method == 'POST':
         try:
-            # تحويل البيانات من النموذج
             due_date_str = request.POST.get('due_date')
             due_date = datetime.strptime(due_date_str, '%Y-%m-%d').date()
             
-            # معالجة الحقول من نوع DurationField
             estimated_hours = request.POST.get('estimated_duration')
             estimated_duration = timedelta(hours=int(estimated_hours)) if estimated_hours else None
 
-
-            # إنشاء أمر العمل جديد
             work_order = WorkOrder(
                 title=request.POST.get('title'),
                 description=request.POST.get('description'),
@@ -1406,11 +1417,9 @@ def work_order_create(request):
         except Exception as e:
             messages.error(request, f'Error during work order creation: {str(e)}')
     
-    # جلب البيانات اللازمة للنموذج
     machines = Machine.objects.all()
     technicians = Technician.objects.all()
 
-    # تعيين تاريخ الغد كتاريخ افتراضي
     default_due_date = (timezone.now() + timedelta(days=1)).strftime('%Y-%m-%d')
     
     context = {
@@ -1457,6 +1466,12 @@ def work_order_detail(request, pk):
     }
     return render(request, 'NiceAdmin/work_o_details.html', context)
 
+
+def delete_work_order(request, pk):
+    work_order = get_object_or_404(WorkOrder, pk=pk)
+    work_order.delete()
+    messages.success(request, 'Work order deleted successfully')
+    return redirect('work-order-list')
 
 
 def complete_work_order(request, pk):
@@ -1849,6 +1864,12 @@ def edit_machine_failure(request, failure_id):
         'form': form,
         'failure': failure
     })
+
+
+def delete_machine_failure(request, failure_id):
+    failure = get_object_or_404(MachineFailure, id=failure_id)
+    failure.delete()
+    return redirect('view-failures')
 
 
 def create_work_order_from_failure(request, failure_id):

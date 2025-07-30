@@ -1,0 +1,6 @@
+{
+    "codesnap.backgroundColor": "#CCCCCC",
+    "codesnap.transparentBackground": true,
+    "codesnap.containerPadding": "2em",
+    "editor.defaultFoldingRangeProvider": null
+}

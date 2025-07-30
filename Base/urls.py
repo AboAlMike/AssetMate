@@ -90,6 +90,8 @@ urlpatterns = [
     path('work_order_create/', views.work_order_create, name='work_order_create'),
     path('work-orders/<int:pk>/', views.work_order_detail, name='work_order_details'),
     path('work-orders/<int:pk>/update/', views.work_order_update, name='work_order_update'),
+    path('work-orders/<int:pk>/delete/', views.delete_work_order, name='delete-work-order'),
+
     
 
     path('add_task_to_work_order/<int:pk>/', views.add_task_to_work_order, name='add_task_to_work_order'),
@@ -109,7 +111,7 @@ urlpatterns = [
     path('view-failures/', views.view_reported_failures, name='view-failures'),
     path('edit-failure/<int:failure_id>/', views.edit_machine_failure, name='edit-failure'),
     path('failures/<int:failure_id>/create-work-order/', views.create_work_order_from_failure, name='create-work-order-from-failure'),
-
+    path('failures/<int:failure_id>/delete/', views.delete_machine_failure, name='delete-failure'),
 
 
 

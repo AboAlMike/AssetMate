@@ -86,6 +86,7 @@ class AssetType(MPTTModel):
     level_indicator = models.CharField(max_length=100, blank=True, editable=False, default=0)
     is_template = models.BooleanField(default=True, verbose_name="Is Template")
     
+    
     class MPTTMeta:
         order_insertion_by = ['name']
         verbose_name = "Asset Type"
@@ -165,10 +166,8 @@ class Machine(models.Model):
 
 class Technician(models.Model):
     Technicianid = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE,verbose_name="User",
-        related_name='technician') 
-    specialization = models.CharField(max_length=100,
-        verbose_name="Specialization")
+    user = models.OneToOneField(User, on_delete=models.CASCADE,verbose_name="User", related_name='technician') 
+    specialization = models.CharField(max_length=100, verbose_name="Specialization")
     phonenumber = models.IntegerField()
     notes = models.TextField(blank=True)
 
@@ -200,20 +199,8 @@ class WorkOrder(models.Model):
     work_order_id = models.AutoField(primary_key=True, verbose_name='Work Order ID')
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    machine = models.ForeignKey(
-        Machine,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name="Machine"
-    )
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='created_work_orders',
-        null=True,  # السماح بقيم NULL
-        blank=True  # السماح بأن يكون الحقل فارغاً في النماذج
-    )    
+    machine = models.ForeignKey(Machine, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Machine")
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_work_orders', null=True, blank=True)    
     created_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateField()
     technician = models.ForeignKey(Technician, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_work_orders')
@@ -223,7 +210,7 @@ class WorkOrder(models.Model):
     estimated_duration = models.DurationField(null=True, blank=True)
     actual_duration = models.DurationField(null=True, blank=True)
     completion_notes = models.TextField(blank=True)
-# Order by created_date
+
     class Meta:
         ordering = ['-created_date']
         

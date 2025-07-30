@@ -114,8 +114,9 @@
         <table class="table tree-table" id="assetTable">
                     <thead> 
                         <tr>
-                            <th >Name</th>
-                            <th class="text-center">Actions </th>
+                            <th>Name</th>
+                            <th class="text-center">Number of Machines</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,7 +132,9 @@
                                     {{ node.name }}
                                 </div>
                             </td>
-                        <!-- </td><span class="badge bg-secondary">Level {{ node.level }}</span>-->
+                            <td class="text-center">
+                                <span class="badge bg-primary">{{ asset_counts|get_item:node.assetid|default:'0' }}</span>
+                            </td>
                             <td class="text-center">
 
                                 
